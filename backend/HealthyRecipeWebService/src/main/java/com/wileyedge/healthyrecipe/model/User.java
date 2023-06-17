@@ -5,36 +5,46 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
-import com.sun.istack.NotNull;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 
 @Entity
+@Table(name = "User")
 public class User {
-	
+
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private long id;
 
-    @NotNull
-    @Size(max = 10)
-    @Column(unique = true)
-    private String username;
+	@NotBlank
+	@Size(max = 10)
+	@Column(unique = true)
+	private String username;
 
-    @NotNull
-    @Email
-    @Column(unique = true)
-    private String email;
+	@NotBlank
+	@Email
+	@Column(unique = true)
+	private String email;
 
-    @NotNull
-    @Size(min = 8)
-    private String password;
 
-    @NotNull
-    private String firstName;
+	private String password;
 
-    private String lastName;
+	@Size(min = 2)
+	@Column(unique = false)
+	private String firstName;
+
+	@Column(unique = false)
+	private String lastName;
+
+	private String role = "MEMBER";
+
+	private String token;
 
 	public User() {
 		super();
@@ -50,20 +60,11 @@ public class User {
 		this.lastName = lastName;
 	}
 
-	public User(@Size(max = 10) String username, @Email String email, @Size(min = 8) String password,
-			String firstName) {
-		super();
-		this.username = username;
-		this.email = email;
-		this.password = password;
-		this.firstName = firstName;
-	}
-
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
@@ -83,10 +84,12 @@ public class User {
 		this.email = email;
 	}
 
+	@JsonIgnore
 	public String getPassword() {
 		return password;
 	}
 
+	@JsonProperty
 	public void setPassword(String password) {
 		this.password = password;
 	}
@@ -107,10 +110,37 @@ public class User {
 		this.lastName = lastName;
 	}
 
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
+	}
+
+	public boolean isPasswordValid() {
+		if (password == null || password.trim().isEmpty()) {
+			return false;
+		}
+
+		String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
+		return password.matches(passwordPattern);
+
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", username=" + username + ", email=" + email + ", password=" + password
-				+ ", firstName=" + firstName + ", lastName=" + lastName + "]";
+				+ ", firstName=" + firstName + ", lastName=" + lastName + ", role=" + role + ", token=" + token + "]";
 	}
-    
+
+
 }

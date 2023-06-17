@@ -1,6 +1,5 @@
 package com.wileyedge.healthyrecipe.controller;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +9,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wileyedge.healthyrecipe.exception.UserNotFoundException;
+import com.wileyedge.healthyrecipe.model.LoginRequest;
 import com.wileyedge.healthyrecipe.model.User;
 import com.wileyedge.healthyrecipe.service.UserServiceInterface;
 
@@ -28,23 +29,18 @@ public class UserController {
 	public UserController(UserServiceInterface userService) {
 		this.userService = userService;
 	}
-
-	@PostMapping
+	
+	@PostMapping("/signup")
 	public User createUser(@RequestBody User user) {
 		User createdUser = userService.createUser(user);
 		return createdUser;
 	}
 
 	@PutMapping("/{userId}")
-	public User updateUser(@PathVariable Integer userId, @RequestBody User user) {
-		user.setId(userId);
-		User updatedUser = userService.updateUser(user);
+	public User updateUserDetailsById(@PathVariable Integer userId, @RequestBody User userDetails) {
+		userDetails.setId(userId);
+		User updatedUser = userService.updateUserDetailsById(userDetails);
 		return updatedUser;
-	}
-
-	@DeleteMapping("/{userId}")
-	public void deleteUser(@PathVariable Integer userId) {
-		userService.deleteUser(userId);
 	}
 
 	@GetMapping("/{userId}")
@@ -64,7 +60,7 @@ public class UserController {
 		if (user != null) {
 			return user;
 		} else {
-			throw new UserNotFoundException("User not found");
+			throw new UserNotFoundException("Email: " + email);
 		}
 	}
 
@@ -74,17 +70,38 @@ public class UserController {
 		if (user != null) {
 			return user;
 		} else {
-			throw new UserNotFoundException("User not found");
+			throw new UserNotFoundException("Username: " + username);
 		}
 	}
 
-	@GetMapping
-	public List<User> getAllUsers() {
-		List<User> users = userService.findAllUsers();
-		return users;
+	@PostMapping("/login")
+	public String loginUser(@RequestBody LoginRequest loginRequest) {
+	    String username = loginRequest.getUsername();
+	    String password = loginRequest.getPassword();
+	    
+	    String token = userService.loginUser(username, password);
+	    
+	    return token;
 	}
-
-
-
+	
+	@PostMapping("/logout")
+	public String logoutUser(@RequestHeader("Authorization") String token) {
+	    userService.logoutUser(token);
+	    return "User logged out successfully.";
+	}
+	
+//	@DeleteMapping("/{userId}")
+//	public String deleteUser(@PathVariable Long userIdToDelete, @RequestHeader("Authorization") String token) {
+//	    String jwtToken = token.split(" ")[1].trim(); // the first part of the string is "Bearer" and we want to remove it.
+//		try {
+//			userService.deleteUser(userIdToDelete, jwtToken);
+//			return "SUCCESS: User has been deleted successfully";
+//		}catch (UserNotFoundException ex) {
+//			return ex.getMessage();
+//		}catch (Exception ex) {
+//			return ex.getMessage();
+//		}
+//	    
+//	}
 
 }

@@ -13,12 +13,19 @@ public interface UserServiceInterface {
 
 	User findUserByEmail(String email);
 
-	Optional<User> findUserById(int userId);
+	Optional<User> findUserById(long userId);
 
-	User updateUser(User user);
+	User updateUserDetailsById(User user);
 
 	User createUser(User user);
 
-	void deleteUser(int userId);
+	void deleteUser(long userId, String token);
+	
+	String loginUser(String identifier, String password);
+
+
+	void logoutUser(String token);
+
+	
 
 }
