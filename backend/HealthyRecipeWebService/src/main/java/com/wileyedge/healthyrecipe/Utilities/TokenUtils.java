@@ -68,12 +68,11 @@ public class TokenUtils {
 	        } catch (ExpiredJwtException ex) {
 	        	System.out.println("Expired token");
 	        	System.out.println(ex.getMessage());
-	            return false;
+	        	throw new InvalidTokenException("Expired token");
 	        } catch (JwtException ex) {
 	        	System.out.println("JWTException ");
 	        	System.out.println(ex.getMessage());
-	        
-	            return false;
+	        	throw new InvalidTokenException("Invalid Token");
 	        }
 	    }
 	

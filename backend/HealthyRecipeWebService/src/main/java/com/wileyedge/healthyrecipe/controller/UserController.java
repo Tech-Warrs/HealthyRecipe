@@ -43,43 +43,13 @@ public class UserController {
 		return updatedUser;
 	}
 
-	@GetMapping("/{userId}")
-	public User getUserById(@PathVariable Integer userId) {
-		 Optional<User> userOptional = userService.findUserById(userId);
-		    if (userOptional.isPresent()) {
-		        User user = userOptional.get();
-		        return user;
-		    } else {
-		        throw new UserNotFoundException("User not found");
-		    }
-	}
-
-	@GetMapping("/email/{email}")
-	public User getUserByEmail(@PathVariable String email) {
-		User user = userService.findUserByEmail(email);
-		if (user != null) {
-			return user;
-		} else {
-			throw new UserNotFoundException("Email: " + email);
-		}
-	}
-
-	@GetMapping("/username/{username}")
-	public User getUserByUsername(@PathVariable String username) {
-		User user = userService.findUserByUsername(username);
-		if (user != null) {
-			return user;
-		} else {
-			throw new UserNotFoundException("Username: " + username);
-		}
-	}
-
+	
 	@PostMapping("/login")
 	public String loginUser(@RequestBody LoginRequest loginRequest) {
-	    String username = loginRequest.getUsername();
+	    String identifier = loginRequest.getIdentifier();
 	    String password = loginRequest.getPassword();
 	    
-	    String token = userService.loginUser(username, password);
+	    String token = userService.loginUser(identifier, password);
 	    
 	    return token;
 	}
@@ -89,19 +59,6 @@ public class UserController {
 	    userService.logoutUser(token);
 	    return "User logged out successfully.";
 	}
-	
-//	@DeleteMapping("/{userId}")
-//	public String deleteUser(@PathVariable Long userIdToDelete, @RequestHeader("Authorization") String token) {
-//	    String jwtToken = token.split(" ")[1].trim(); // the first part of the string is "Bearer" and we want to remove it.
-//		try {
-//			userService.deleteUser(userIdToDelete, jwtToken);
-//			return "SUCCESS: User has been deleted successfully";
-//		}catch (UserNotFoundException ex) {
-//			return ex.getMessage();
-//		}catch (Exception ex) {
-//			return ex.getMessage();
-//		}
-//	    
-//	}
+
 
 }

@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,11 +25,11 @@ public class UserServiceImpl implements UserServiceInterface {
 	private BCryptPasswordEncoder passwordEncoder;
 
 	@Autowired
-    public UserServiceImpl(UserRepository userRepository, TokenUtils tokenUtils, BCryptPasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.tokenUtils = tokenUtils;
-        this.passwordEncoder = passwordEncoder;
-    }
+	public UserServiceImpl(UserRepository userRepository, TokenUtils tokenUtils, BCryptPasswordEncoder passwordEncoder) {
+		this.userRepository = userRepository;
+		this.tokenUtils = tokenUtils;
+		this.passwordEncoder = passwordEncoder;
+	}
 
 	@Override
 	public User createUser(User user) {
@@ -47,12 +46,12 @@ public class UserServiceImpl implements UserServiceInterface {
 		if (!user.isPasswordValid()) {
 			throw new InvalidPasswordException("Password must be at least 8 characters including one uppercase, one lowercase, one number, and one symbol.");
 		}
-		
-		 // Salt and bcrypt the password
-        String hashedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(hashedPassword);
 
-        return userRepository.save(user);
+		// Salt and bcrypt the password
+		String hashedPassword = passwordEncoder.encode(user.getPassword());
+		user.setPassword(hashedPassword);
+
+		return userRepository.save(user);
 	}
 
 	@Override
@@ -82,22 +81,11 @@ public class UserServiceImpl implements UserServiceInterface {
 
 	@Override
 	public void deleteUser(long userIdToDelete, String token) {
-		// validates the integrity and authenticity of the token based on its signature and other integrity checks
-		if (!tokenUtils.isTokenValid(token)) {
-			throw new InvalidTokenException("Invalid token");
-		}
-
-		// Validate user embedded in the token is actually exist
-		User loggedInUser = tokenUtils.getUserFromToken(token);
-		if (loggedInUser == null) {
-			throw new UserNotFoundException("no username found in the provided token");
-		}
-
-		// Check if the logged-in user has admin role
+		User loggedInUser = checkIfTokenIsValidAndUserExist(token);
+		// Check if the user has the role "ADMIN"
 		if (!loggedInUser.getRole().equalsIgnoreCase("ADMIN")) {
-			throw new UnauthorizedAccessException("Only admin users can delete users");
+			throw new InvalidTokenException("User not authorized to perform this action.");
 		}
-
 		// Find if the user to be deleted is exist in db
 		Optional<User> userOptional = userRepository.findById(userIdToDelete);
 		if(userOptional.isPresent()) {
@@ -108,38 +96,68 @@ public class UserServiceImpl implements UserServiceInterface {
 	}
 
 	@Override
-	public Optional<User> findUserById(long userId) {
+	public Optional<User> findUserById(long userId, String token) {
+		User loggedInUser = checkIfTokenIsValidAndUserExist(token);
+
+		// Check if the user has the role "ADMIN"
+		if (!loggedInUser.getRole().equalsIgnoreCase("ADMIN")) {
+			throw new InvalidTokenException("User not authorized to perform this action.");
+		}
 		return userRepository.findById(userId);
 	}
 
 	@Override
-	public User findUserByEmail(String email) {
+	public User findUserByEmail(String email, String token) {
+
+		User loggedInUser = checkIfTokenIsValidAndUserExist(token);
+
+		// Check if the user has the role "ADMIN"
+		if (!loggedInUser.getRole().equalsIgnoreCase("ADMIN")) {
+			throw new InvalidTokenException("User not authorized to perform this action.");
+		}
 		return userRepository.findByEmail(email);
 	}
 
 	@Override
-	public User findUserByUsername(String username) {
+	public User findUserByUsername(String username, String token) {
+		User loggedInUser = checkIfTokenIsValidAndUserExist(token);
+
+		// Check if the user has the role "ADMIN"
+		if (!loggedInUser.getRole().equalsIgnoreCase("ADMIN")) {
+			throw new InvalidTokenException("User not authorized to perform this action.");
+		}
+
 		return userRepository.findByUsername(username);
 	}
 
 	@Override
-	public List<User> findAllUsers() {
+	public List<User> findAllUsers(String token) {
+		User loggedInUser = checkIfTokenIsValidAndUserExist(token);
+
+		// Check if the user has the role "ADMIN"
+		if (!loggedInUser.getRole().equalsIgnoreCase("ADMIN")) {
+			throw new InvalidTokenException("User not authorized to perform this action.");
+		}
+
 		return userRepository.findAll();
 	}
 
 	@Override
 	public String loginUser(String identifier, String password) {
 		boolean isEmail = identifier.contains("@") && identifier.contains(".");
-	    User user = isEmail ? userRepository.findByEmail(identifier) : userRepository.findByUsername(identifier);
+		System.out.println("Identifier: " + identifier);
+		User user = isEmail ? userRepository.findByEmail(identifier) : userRepository.findByUsername(identifier);
+		System.out.println(user);
 
-	    if (user != null && passwordEncoder.matches(password, user.getPassword())) {
-	        String token = tokenUtils.generateToken(user);
-	        user.setToken(token);
-	        return token;
-	    } else {
-	        throw new UserNotFoundException("Invalid credentials.");
-	    }
+		if (user != null && passwordEncoder.matches(password, user.getPassword())) {
+			String token = tokenUtils.generateToken(user);
+			user.setToken(token);
+			return token;
+		} else {
+			throw new InvalidTokenException("Invalid token.");
+		}
 	}
+
 
 	@Override
 	public void logoutUser(String token) {
@@ -151,5 +169,26 @@ public class UserServiceImpl implements UserServiceInterface {
 
 		user.setToken("");
 	}
+
+
+	private User checkIfTokenIsValidAndUserExist(String token) {
+		// Clean the token by removing the "Bearer " prefix
+		String cleanedToken = token.replace("Bearer ", "");
+
+		// Validates the integrity and authenticity of the token based on its signature and other integrity checks
+		if (!tokenUtils.isTokenValid(cleanedToken)) {
+			throw new InvalidTokenException("Invalid token");
+		}
+
+		// Validate user embedded in the token actually exists
+		User loggedInUser = tokenUtils.getUserFromToken(cleanedToken);
+		if (loggedInUser == null) {
+			throw new InvalidTokenException("Invalid token. No user found in the token.");
+		}
+
+		return loggedInUser;
+	}
+
+
 
 }
