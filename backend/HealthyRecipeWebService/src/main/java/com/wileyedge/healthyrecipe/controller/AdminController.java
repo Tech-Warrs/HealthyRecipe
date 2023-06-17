@@ -22,7 +22,6 @@ public class AdminController {
 	
 	private UserServiceInterface userService;
 	
-	@Autowired
 	public AdminController(UserServiceInterface userService) {
 		this.userService = userService;
 	}
