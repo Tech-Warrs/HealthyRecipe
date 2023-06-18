@@ -36,16 +36,16 @@ public class User implements Serializable {
 	private long id;
 
 	@NotBlank
-	@Size(max = 15)
-	@Column(unique = true)
+    @Column(length = 15, unique = true)
 	private String username;
 
 	@NotBlank
-	@Email
-	@Column(unique = true)
+    @Email
+    @Column(length = 100, unique = true)
 	private String email;
 
-
+	@JsonIgnore
+	@NotBlank @Size(min = 8)
 	private String password;
 
 	@Size(min = 2)
@@ -57,6 +57,7 @@ public class User implements Serializable {
 
 	private String role = "MEMBER";
 
+	@JsonIgnore
 	private String token;
 	
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
@@ -69,7 +70,7 @@ public class User implements Serializable {
 		super();
 	}
 
-	public User(@Size(max = 10) String username, @Email String email, @Size(min = 8) String password, String firstName,
+	public User(@NotBlank @Size(max = 15) String username, @NotBlank @Email  @Size(max = 100)String email, @NotBlank @Size(min = 8) String password, @Size(min = 2) @NotBlank String firstName,
 			String lastName) {
 		super();
 		this.username = username;
@@ -137,6 +138,7 @@ public class User implements Serializable {
 		this.role = role;
 	}
 
+	@JsonIgnore
 	public boolean isPasswordValid() {
 		if (password == null || password.trim().isEmpty()) {
 			return false;
@@ -175,9 +177,8 @@ public class User implements Serializable {
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", username=" + username + ", email=" + email + ", password=" + password
-				+ ", firstName=" + firstName + ", lastName=" + lastName + ", role=" + role + ", token=" + token + "]";
+		return "User [id=" + id + ", username=" + username + ", email=" + email + ", firstName=" + firstName
+				+ ", lastName=" + lastName + ", role=" + role + ", recipes=" + recipes + "]";
 	}
-
 
 }

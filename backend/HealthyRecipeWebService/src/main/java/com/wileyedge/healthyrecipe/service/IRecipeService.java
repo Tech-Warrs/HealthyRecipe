@@ -1,13 +1,11 @@
 package com.wileyedge.healthyrecipe.service;
 
 import java.util.List;
-import java.util.Optional;
 
+import com.wileyedge.healthyrecipe.model.HealthCategory;
 import com.wileyedge.healthyrecipe.model.Recipe;
 
 public interface IRecipeService {
-
-	Recipe createRecipe(Recipe recipe);
 
 	List<Recipe> getAllRecipes();
 
@@ -15,6 +13,11 @@ public interface IRecipeService {
 
 	Recipe getRecipeById(long recipeId);
 
-	List<Recipe> getRecipesByHealthType(String healthType);
+	List<Recipe> getRecipesByHealthCategories(List<HealthCategory> healthCategories);
+
+	Recipe createRecipe(Recipe recipe, String token);
+
+//	List<Recipe> getRecipesByUserId(Long userId);
+	   
 
 }

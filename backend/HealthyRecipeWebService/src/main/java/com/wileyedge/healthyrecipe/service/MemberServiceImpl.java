@@ -1,8 +1,5 @@
 package com.wileyedge.healthyrecipe.service;
 
-import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -10,21 +7,20 @@ import org.springframework.stereotype.Service;
 import com.wileyedge.healthyrecipe.dao.UserRepository;
 import com.wileyedge.healthyrecipe.exception.DuplicateEmailException;
 import com.wileyedge.healthyrecipe.exception.InvalidCredentialException;
-import com.wileyedge.healthyrecipe.exception.InvalidTokenException;
 import com.wileyedge.healthyrecipe.exception.UnauthorizedAccessException;
 import com.wileyedge.healthyrecipe.exception.UserNotFoundException;
 import com.wileyedge.healthyrecipe.exception.UsernameAlreadyExistsException;
 import com.wileyedge.healthyrecipe.model.User;
 
 @Service
-public class UserServiceImpl implements IUserService {
+public class MemberServiceImpl implements IMemberService {
 
 	private UserRepository userRepository;
 	private AuthService authService;
 	private BCryptPasswordEncoder passwordEncoder;
 
 	@Autowired
-	public UserServiceImpl(UserRepository userRepository,AuthService authService, BCryptPasswordEncoder passwordEncoder) {
+	public MemberServiceImpl(UserRepository userRepository,AuthService authService, BCryptPasswordEncoder passwordEncoder) {
 		this.userRepository = userRepository;
 		this.authService = authService;
 		this.passwordEncoder = passwordEncoder;
@@ -54,7 +50,15 @@ public class UserServiceImpl implements IUserService {
 	}
 
 	@Override
-	public User updateUserDetailsById(User user) {
+	public User updateUserDetailsById(User user, String token) {
+		//Validate token
+		User loggedInUser = authService.isTokenValid(token);
+
+		//Check if the ID of user to be updated is the same as the Id of the user in the token
+		boolean isSameUser = loggedInUser.getId() == user.getId();
+		if(!isSameUser) {
+			throw new UnauthorizedAccessException("You are not authorized to edit details user ID : " + user.getId() );
+		}
 
 		User existingUser = userRepository.findById(user.getId())
 				.orElseThrow(() -> new UserNotFoundException("User ID : " + user.getId()));
@@ -80,36 +84,33 @@ public class UserServiceImpl implements IUserService {
 
 	@Override
 	public void deleteUser(long userIdToDelete, String token) {
-		//Check if token is valid
+		//Check if token is valid (not expired, user in token is existed and token match with token stored in Db)
 		User loggedInUser = authService.isTokenValid(token);
 
-		// Check if the user has the role "ADMIN"
-		boolean loggedInUserIsAdmin = authService.isLoggedInUserHasAdminRole(loggedInUser);
-		if (!loggedInUserIsAdmin) {
-			throw new UnauthorizedAccessException("ACCESS Denied for action :  Delete User.");
+		//Check if the ID of user to be updated is the same as the Id of the user in the token
+		boolean isSameUser = loggedInUser.getId() == userIdToDelete;
+		if(!isSameUser) {
+			throw new UnauthorizedAccessException("You are not authorized to delete details user ID : " + userIdToDelete );
 		}
 
-		// Check if the user to be deleted is exist in db
-		Optional<User> userOptional = userRepository.findById(userIdToDelete);
-		if(userOptional.isPresent()) {
-			userRepository.deleteById(userIdToDelete);
-		}else {
-			throw new UserNotFoundException("User ID : " + userIdToDelete);
-		}
+		userRepository.deleteById(userIdToDelete);
+
 	}
 
 	@Override
-	public Optional<User> findUserById(long userId, String token) {
-		//Check if token is valid
+	public User findUserById(long userId, String token) {
+		// Check if token is valid
 		User loggedInUser = authService.isTokenValid(token);
 
-		// Check if the user has the role "ADMIN"
-		boolean loggedInUserIsAdmin = authService.isLoggedInUserHasAdminRole(loggedInUser);
-		if (!loggedInUserIsAdmin) {
-			throw new UnauthorizedAccessException("ACCESS Denied for action :  Find user by ID.");
+		//Check if the ID of user to be updated is the same as the Id of the user in the token
+		boolean isSameUser = loggedInUser.getId() == userId;
+
+		if(!isSameUser) {
+			throw new UnauthorizedAccessException("You are not authorized to view details user ID : " + userId );
 		}
 
-		return userRepository.findById(userId);
+		return userRepository.findById(userId)
+				.orElseThrow(() -> new UserNotFoundException("User ID: " + userId));
 	}
 
 	@Override
@@ -117,10 +118,13 @@ public class UserServiceImpl implements IUserService {
 
 		User loggedInUser = authService.isTokenValid(token);
 
-		// Check if the user has the role "ADMIN"
-		if (!loggedInUser.getRole().equalsIgnoreCase("ADMIN")) {
-			throw new InvalidTokenException("ACCESS Denied for action :  Find user by email.");
+		//Check if the ID of user to be updated is the same as the Id of the user in the token
+		boolean isSameUser = loggedInUser.getUsername().equalsIgnoreCase(email);
+
+		if(!isSameUser) {
+			throw new UnauthorizedAccessException("You are not authorized to view details user : " + email );
 		}
+
 		return userRepository.findByEmail(email);
 	}
 
@@ -129,27 +133,14 @@ public class UserServiceImpl implements IUserService {
 		//Check if token is valid
 		User loggedInUser = authService.isTokenValid(token);
 
-		// Check if the user has the role "ADMIN"
-		boolean loggedInUserIsAdmin = authService.isLoggedInUserHasAdminRole(loggedInUser);
-		if (!loggedInUserIsAdmin) {
-			throw new UnauthorizedAccessException("ACCESS Denied for action :  Find user by name.");
-		}
+		//Check if the username of user to be updated is the same as the username of the user in the token
+		boolean isSameUser = loggedInUser.getUsername().equalsIgnoreCase(username);
+
+		if(!isSameUser) {
+			throw new UnauthorizedAccessException("You are not authorized to view details user : " + username );
+		}		
 
 		return userRepository.findByUsername(username);
-	}
-
-	@Override
-	public List<User> findAllUsers(String token) {
-		//Check if token is valid
-		User loggedInUser = authService.isTokenValid(token);
-
-		// Check if the user has the role "ADMIN"
-		boolean loggedInUserIsAdmin = authService.isLoggedInUserHasAdminRole(loggedInUser);
-		if (!loggedInUserIsAdmin) {
-			throw new UnauthorizedAccessException("ACCESS Denied for action : Get all users.");
-		}
-
-		return userRepository.findAll();
 	}
 
 

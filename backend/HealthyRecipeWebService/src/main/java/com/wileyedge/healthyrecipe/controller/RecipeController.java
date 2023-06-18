@@ -1,5 +1,6 @@
 package com.wileyedge.healthyrecipe.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.wileyedge.healthyrecipe.model.HealthCategory;
 import com.wileyedge.healthyrecipe.model.Recipe;
 import com.wileyedge.healthyrecipe.service.IRecipeService;
 
@@ -42,10 +44,24 @@ public class RecipeController {
 		return recipeService.getRecipesByUserId(userId);
 	}
 
-	@GetMapping("/health/{healthType}")
-	public List<Recipe> getRecipesByHealthType(@PathVariable String healthType) {
-		return recipeService.getRecipesByHealthType(healthType);
+	@GetMapping("/health")
+	public List<Recipe> getRecipesByHealthType(@RequestBody List<String> healthTypes) {
+	    List<HealthCategory> healthCategories = new ArrayList<>();
+	    for (String healthType : healthTypes) {
+	        healthCategories.add(HealthCategory.valueOf(healthType.toUpperCase()));
+	    }
+	    return recipeService.getRecipesByHealthCategories(healthCategories);
 	}
+	
+	
+	@PostMapping("")
+	public Recipe createRecipe(@RequestBody Recipe recipe, @RequestHeader("Authorization") String token) {
+	    return recipeService.createRecipe(recipe, token);
+	}
+
+
+
+
 
 }
 

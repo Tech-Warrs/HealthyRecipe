@@ -49,27 +49,26 @@ public class AuthService implements IAuthService {
 	
 	@Override
 	public User isTokenValid(String token) {
-		// Clean the token by removing the "Bearer " prefix
-		String cleanedToken = token.replace("Bearer ", "");
+	    // Clean the token by removing the "Bearer " prefix
+	    String cleanedToken = token.replace("Bearer ", "");
 
-		// Validates the integrity and authenticity of the token based on its signature and other integrity checks
-		if (!tokenUtils.isTokenValid(cleanedToken)) {
-			throw new InvalidTokenException("Invalid token");
-		}
+	    // Validates the integrity and authenticity of the token based on its signature and other integrity checks
+	    tokenUtils.checkIfJwtToken(cleanedToken);
 
-		// Validate user embedded in the token actually exists
-		User loggedInUser = tokenUtils.getUserFromToken(cleanedToken);
-		if (loggedInUser == null) {
-			throw new InvalidTokenException("Invalid token. No user found in the token.");
-		}
+	    // Validate user embedded in the token actually exists
+	    User loggedInUser = tokenUtils.getUserFromToken(cleanedToken);
+	    if (loggedInUser == null) {
+	        throw new InvalidTokenException("Invalid token. No user found in the token.");
+	    }
 
-		// Check if the provided token matches the user's token
-		if (!cleanedToken.equals(loggedInUser.getToken())) {
-			throw new InvalidTokenException("Invalid token. Token does not match the user's token.");
-		}
+	    // Check if the provided token matches the user's token stored in DB
+	    if (!cleanedToken.equals(loggedInUser.getToken())) {
+	        throw new InvalidTokenException("Invalid token. Token does not match the user's token.");
+	    }
 
-		return loggedInUser;
+	    return loggedInUser;
 	}
+
 	
 	@Override
 	public void logoutUser(String token) {

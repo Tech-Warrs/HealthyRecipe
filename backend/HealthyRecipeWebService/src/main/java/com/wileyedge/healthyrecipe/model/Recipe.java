@@ -55,12 +55,10 @@ public class Recipe implements Serializable{
 	private User user;
 
 	public Recipe() {
-		super();
 	}
 
 	public Recipe(String title, String shortDesc, String ingredients, String instructions,
 			Set<HealthCategory> suitableFor, Set<HealthCategory> notSuitableFor, int cookingDurationInMinutes) {
-		super();
 		this.title = title;
 		this.shortDesc = shortDesc;
 		this.ingredients = ingredients;
@@ -69,6 +67,7 @@ public class Recipe implements Serializable{
 		this.notSuitableFor = notSuitableFor;
 		this.cookingDurationInMinutes = cookingDurationInMinutes;
 	}
+	
 
 	public Long getRecipeId() {
 		return recipeId;

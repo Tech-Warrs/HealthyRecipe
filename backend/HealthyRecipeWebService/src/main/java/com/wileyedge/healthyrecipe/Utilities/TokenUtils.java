@@ -41,24 +41,26 @@ public class TokenUtils {
 
 
 
-	  public String generateToken(User user) {
-	        String role = user.getRole();
+	public String generateToken(User user) {
+	    String role = user.getRole();
+	    long userId = user.getId();
 
-	        // Generate the token
-	        String token = Jwts.builder()
-	                .setSubject(user.getUsername())
-	                .claim("role", role)
-	                .setIssuedAt(new Date())
-	                .setExpiration(new Date(System.currentTimeMillis() + 2 * 60 * 60 * 1000))   // Token validity: 2 hours
-	                .signWith(key, SignatureAlgorithm.HS256)
-	                .compact();
+	    // Generate the token
+	    String token = Jwts.builder()
+	            .setSubject(user.getUsername())
+	            .claim("role", role)
+	            .claim("userId", userId)
+	            .setIssuedAt(new Date())
+	            .setExpiration(new Date(System.currentTimeMillis() + 2 * 60 * 60 * 1000))   // Token validity: 2 hours
+	            .signWith(key, SignatureAlgorithm.HS256)
+	            .compact();
 
-	        return token;
-	    }
+	    return token;
+	}
     
 
 	//validate token
-	  public boolean isTokenValid(String token) {
+	  public boolean checkIfJwtToken(String token) {		  
 		  String cleanedToken = token.replace("Bearer ", "");
 		    
 	        try {
@@ -80,14 +82,12 @@ public class TokenUtils {
                     .getBody();
 
             String username = claims.getSubject();
-            String role = (String) claims.get("role");
 
             // Retrieve the user from the database based on the username
             User user = userRepository.findByUsername(username);
             if (user == null) {
                 throw new UserNotFoundException("username : " + username);
             }        
-            user.setRole(role);
             return user;
         } catch (ExpiredJwtException ex) {
             throw new InvalidTokenException("Token has expired. Please login again.");
