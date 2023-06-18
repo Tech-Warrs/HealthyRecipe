@@ -7,10 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.wileyedge.healthyrecipe.Utilities.TokenUtils;
 import com.wileyedge.healthyrecipe.dao.UserRepository;
 import com.wileyedge.healthyrecipe.exception.DuplicateEmailException;
-import com.wileyedge.healthyrecipe.exception.InvalidPasswordException;
+import com.wileyedge.healthyrecipe.exception.InvalidCredentialException;
 import com.wileyedge.healthyrecipe.exception.InvalidTokenException;
 import com.wileyedge.healthyrecipe.exception.UnauthorizedAccessException;
 import com.wileyedge.healthyrecipe.exception.UserNotFoundException;
@@ -21,13 +20,13 @@ import com.wileyedge.healthyrecipe.model.User;
 public class UserServiceImpl implements IUserService {
 
 	private UserRepository userRepository;
-	private TokenUtils tokenUtils;
+	private AuthService authService;
 	private BCryptPasswordEncoder passwordEncoder;
 
 	@Autowired
-	public UserServiceImpl(UserRepository userRepository, TokenUtils tokenUtils, BCryptPasswordEncoder passwordEncoder) {
+	public UserServiceImpl(UserRepository userRepository,AuthService authService, BCryptPasswordEncoder passwordEncoder) {
 		this.userRepository = userRepository;
-		this.tokenUtils = tokenUtils;
+		this.authService = authService;
 		this.passwordEncoder = passwordEncoder;
 	}
 
@@ -44,7 +43,7 @@ public class UserServiceImpl implements IUserService {
 
 		//Check if password valid
 		if (!user.isPasswordValid()) {
-			throw new InvalidPasswordException("Password must be at least 8 characters including one uppercase, one lowercase, one number, and one symbol.");
+			throw new InvalidCredentialException("Password must be at least 8 characters including one uppercase, one lowercase, one number, and one symbol.");
 		}
 
 		// Salt and bcrypt the password
@@ -81,12 +80,16 @@ public class UserServiceImpl implements IUserService {
 
 	@Override
 	public void deleteUser(long userIdToDelete, String token) {
-		User loggedInUser = checkIfTokenIsValidAndUserExist(token);
+		//Check if token is valid
+		User loggedInUser = authService.isTokenValid(token);
+
 		// Check if the user has the role "ADMIN"
-		if (!loggedInUser.getRole().equalsIgnoreCase("ADMIN")) {
-			throw new InvalidTokenException("User not authorized to perform this action.");
+		boolean loggedInUserIsAdmin = authService.isLoggedInUserHasAdminRole(loggedInUser);
+		if (!loggedInUserIsAdmin) {
+			throw new UnauthorizedAccessException("ACCESS Denied for action :  Delete User.");
 		}
-		// Find if the user to be deleted is exist in db
+
+		// Check if the user to be deleted is exist in db
 		Optional<User> userOptional = userRepository.findById(userIdToDelete);
 		if(userOptional.isPresent()) {
 			userRepository.deleteById(userIdToDelete);
@@ -97,34 +100,39 @@ public class UserServiceImpl implements IUserService {
 
 	@Override
 	public Optional<User> findUserById(long userId, String token) {
-		User loggedInUser = checkIfTokenIsValidAndUserExist(token);
+		//Check if token is valid
+		User loggedInUser = authService.isTokenValid(token);
 
 		// Check if the user has the role "ADMIN"
-		if (!loggedInUser.getRole().equalsIgnoreCase("ADMIN")) {
-			throw new InvalidTokenException("User not authorized to perform this action.");
+		boolean loggedInUserIsAdmin = authService.isLoggedInUserHasAdminRole(loggedInUser);
+		if (!loggedInUserIsAdmin) {
+			throw new UnauthorizedAccessException("ACCESS Denied for action :  Find user by ID.");
 		}
+
 		return userRepository.findById(userId);
 	}
 
 	@Override
 	public User findUserByEmail(String email, String token) {
 
-		User loggedInUser = checkIfTokenIsValidAndUserExist(token);
+		User loggedInUser = authService.isTokenValid(token);
 
 		// Check if the user has the role "ADMIN"
 		if (!loggedInUser.getRole().equalsIgnoreCase("ADMIN")) {
-			throw new InvalidTokenException("User not authorized to perform this action.");
+			throw new InvalidTokenException("ACCESS Denied for action :  Find user by email.");
 		}
 		return userRepository.findByEmail(email);
 	}
 
 	@Override
 	public User findUserByUsername(String username, String token) {
-		User loggedInUser = checkIfTokenIsValidAndUserExist(token);
+		//Check if token is valid
+		User loggedInUser = authService.isTokenValid(token);
 
 		// Check if the user has the role "ADMIN"
-		if (!loggedInUser.getRole().equalsIgnoreCase("ADMIN")) {
-			throw new InvalidTokenException("User not authorized to perform this action.");
+		boolean loggedInUserIsAdmin = authService.isLoggedInUserHasAdminRole(loggedInUser);
+		if (!loggedInUserIsAdmin) {
+			throw new UnauthorizedAccessException("ACCESS Denied for action :  Find user by name.");
 		}
 
 		return userRepository.findByUsername(username);
@@ -132,74 +140,17 @@ public class UserServiceImpl implements IUserService {
 
 	@Override
 	public List<User> findAllUsers(String token) {
-		User loggedInUser = checkIfTokenIsValidAndUserExist(token);
+		//Check if token is valid
+		User loggedInUser = authService.isTokenValid(token);
 
 		// Check if the user has the role "ADMIN"
-		if (!loggedInUser.getRole().equalsIgnoreCase("ADMIN")) {
-			throw new InvalidTokenException("User not authorized to perform this action.");
+		boolean loggedInUserIsAdmin = authService.isLoggedInUserHasAdminRole(loggedInUser);
+		if (!loggedInUserIsAdmin) {
+			throw new UnauthorizedAccessException("ACCESS Denied for action : Get all users.");
 		}
 
 		return userRepository.findAll();
 	}
-
-	@Override
-	public String loginUser(String identifier, String password) {
-		boolean isEmail = identifier.contains("@") && identifier.contains(".");
-		System.out.println("Identifier: " + identifier);
-		User user = isEmail ? userRepository.findByEmail(identifier) : userRepository.findByUsername(identifier);
-		System.out.println(user);
-
-		if (user != null && passwordEncoder.matches(password, user.getPassword())) {
-			String token = tokenUtils.generateToken(user);
-			String cleanedToken = token.replace("Bearer ", "");
-			user.setToken(cleanedToken);
-			userRepository.save(user);
-			return cleanedToken;
-		} else {
-			throw new InvalidTokenException("Invalid token.");
-		}
-	}
-
-
-	@Override
-	public void logoutUser(String token) {
-		// Extract the token from the Authorization header
-		String authToken = token.replace("Bearer ", "");
-
-		// Validate and decode the token to retrieve the user details
-		User user = tokenUtils.getUserFromToken(authToken);
-
-		user.setToken("");
-		userRepository.save(user);
-	}
-
-
-	private User checkIfTokenIsValidAndUserExist(String token) {
-		// Clean the token by removing the "Bearer " prefix
-		String cleanedToken = token.replace("Bearer ", "");
-
-		// Validates the integrity and authenticity of the token based on its signature and other integrity checks
-		if (!tokenUtils.isTokenValid(cleanedToken)) {
-			throw new InvalidTokenException("Invalid token");
-		}
-
-		// Validate user embedded in the token actually exists
-		User loggedInUser = tokenUtils.getUserFromToken(cleanedToken);
-		if (loggedInUser == null) {
-			throw new InvalidTokenException("Invalid token. No user found in the token.");
-		}
-		
-		// Check if the provided token matches the user's token
-	    if (!cleanedToken.equals(loggedInUser.getToken())) {
-	    	System.out.println("CleanedToken In CheckToken : " + cleanedToken);
-	    	System.out.println("UserToken In CheckToken: " + loggedInUser.getToken());
-	    	System.out.println("USERID in Check Token " + loggedInUser.getId());
-	        throw new InvalidTokenException("Invalid token. Token does not match the user's token.");
-	    }
-
-		return loggedInUser;
-	}
-
 
 
 }

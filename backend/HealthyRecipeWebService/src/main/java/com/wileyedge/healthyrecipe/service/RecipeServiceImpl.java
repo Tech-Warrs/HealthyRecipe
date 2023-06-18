@@ -24,7 +24,7 @@ public class RecipeServiceImpl implements IRecipeService {
 		this.recipeRepository = recipeRepository;
 		this.userRepository = userRepository;
 	}
-
+	
 	@Override
 	public List<Recipe> getAllRecipes(){
 		return recipeRepository.findAll();

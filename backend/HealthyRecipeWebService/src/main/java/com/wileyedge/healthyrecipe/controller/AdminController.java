@@ -94,8 +94,6 @@ public class AdminController {
 		recipeService.createRecipe(recipe1);
 		recipeService.createRecipe(recipe2);
 
-
-
 	}
 
 	@GetMapping("/users")

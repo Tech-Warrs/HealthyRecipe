@@ -4,7 +4,6 @@ package com.wileyedge.healthyrecipe.Utilities;
 
 import java.security.Key;
 import java.util.Date;
-import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -50,7 +49,7 @@ public class TokenUtils {
 	                .setSubject(user.getUsername())
 	                .claim("role", role)
 	                .setIssuedAt(new Date())
-	                .setExpiration(new Date(System.currentTimeMillis() + 86400000)) // Token validity: 24 hours
+	                .setExpiration(new Date(System.currentTimeMillis() + 2 * 60 * 60 * 1000))   // Token validity: 2 hours
 	                .signWith(key, SignatureAlgorithm.HS256)
 	                .compact();
 
@@ -60,19 +59,15 @@ public class TokenUtils {
 
 	//validate token
 	  public boolean isTokenValid(String token) {
-		  token = token.trim(); // Strip leading and trailing whitespace
+		  String cleanedToken = token.replace("Bearer ", "");
 		    
 	        try {
-	            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);         	            
+	            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(cleanedToken);         	            
 	            return true;
 	        } catch (ExpiredJwtException ex) {
-	        	System.out.println("Expired token");
-	        	System.out.println(ex.getMessage());
-	        	throw new InvalidTokenException("Expired token");
+	        	throw new InvalidTokenException("Token has expired. Please login again.");
 	        } catch (JwtException ex) {
-	        	System.out.println("JWTException ");
-	        	System.out.println(ex.getMessage());
-	        	throw new InvalidTokenException("Invalid Token");
+	        	throw new InvalidTokenException("Invalid Jwt Token");
 	        }
 	    }
 	
@@ -90,19 +85,16 @@ public class TokenUtils {
             // Retrieve the user from the database based on the username
             User user = userRepository.findByUsername(username);
             if (user == null) {
-                throw new UserNotFoundException("User not found.");
-            }
-            
+                throw new UserNotFoundException("username : " + username);
+            }        
             user.setRole(role);
-
             return user;
         } catch (ExpiredJwtException ex) {
-            throw new InvalidTokenException("Token has expired.");
+            throw new InvalidTokenException("Token has expired. Please login again.");
         } catch (JwtException ex) {
-            throw new InvalidTokenException("Invalid token.");
+            throw new InvalidTokenException("Invalid Jwt Token.");
         }
 
-    
     }
         
 

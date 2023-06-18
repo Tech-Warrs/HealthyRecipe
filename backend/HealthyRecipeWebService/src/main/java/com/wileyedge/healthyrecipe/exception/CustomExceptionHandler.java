@@ -37,6 +37,13 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(exResponse, HttpStatus.BAD_REQUEST);
     }
 	
+	
+	@ExceptionHandler(InvalidCredentialException.class)
+    public final ResponseEntity<Object> handleInvalidCredentialException(InvalidCredentialException ex, WebRequest req) {
+        ExceptionResponse exResponse = new ExceptionResponse(new Date(), ex.getMessage(), "Username already exists. Please choose a different one.");
+        return new ResponseEntity<>(exResponse, HttpStatus.BAD_REQUEST);
+    }
+	
 	@ExceptionHandler(InvalidTokenException.class)
     public final ResponseEntity<Object> handleInvalidTokenException(InvalidTokenException ex, WebRequest req) {
         ExceptionResponse exResponse = new ExceptionResponse(new Date(), ex.getMessage(), "Invalid Token.");
@@ -45,12 +52,10 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 	
 	@ExceptionHandler(UnauthorizedAccessException.class)
     public final ResponseEntity<Object> handleUnauthorizedAccessException(UnauthorizedAccessException ex, WebRequest req) {
-        ExceptionResponse exResponse = new ExceptionResponse(new Date(), ex.getMessage(), "Invalid Token.");
+        ExceptionResponse exResponse = new ExceptionResponse(new Date(), ex.getMessage(), "You are not authorized to perform this action.");
         return new ResponseEntity<>(exResponse, HttpStatus.UNAUTHORIZED);
     }
 
-	
-	
 	// RECIPE
 	@ExceptionHandler(RecipeNotFoundException.class)
 	public final ResponseEntity<Object> handleRecipeNotFoundExceptionn(RecipeNotFoundException ex, WebRequest req){

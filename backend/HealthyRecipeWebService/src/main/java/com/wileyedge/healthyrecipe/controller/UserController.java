@@ -6,18 +6,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.wileyedge.healthyrecipe.model.LoginRequest;
 import com.wileyedge.healthyrecipe.model.User;
 import com.wileyedge.healthyrecipe.service.IUserService;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
-
 
 	private IUserService userService;
 
@@ -38,23 +35,5 @@ public class UserController {
 		User updatedUser = userService.updateUserDetailsById(userDetails);
 		return updatedUser;
 	}
-
-	
-	@PostMapping("/login")
-	public String loginUser(@RequestBody LoginRequest loginRequest) {
-	    String identifier = loginRequest.getIdentifier();
-	    String password = loginRequest.getPassword();
-	    
-	    String token = userService.loginUser(identifier, password);
-	    
-	    return token;
-	}
-	
-	@PostMapping("/logout")
-	public String logoutUser(@RequestHeader("Authorization") String token) {
-	    userService.logoutUser(token);
-	    return "User logged out successfully.";
-	}
-
 
 }
