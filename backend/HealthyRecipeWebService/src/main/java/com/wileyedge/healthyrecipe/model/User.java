@@ -1,29 +1,42 @@
 package com.wileyedge.healthyrecipe.model;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 
 @Entity
 @Table(name = "User")
-public class User {
+public class User implements Serializable {
+
+	private static final long serialVersionUID = -8388637334633870676L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
 	@NotBlank
-	@Size(max = 10)
+	@Size(max = 15)
 	@Column(unique = true)
 	private String username;
 
@@ -45,6 +58,12 @@ public class User {
 	private String role = "MEMBER";
 
 	private String token;
+	
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "recipeId")
+	@JsonIdentityReference(alwaysAsId = true)
+	private List<Recipe> recipes = new ArrayList<>();
+	
 
 	public User() {
 		super();
@@ -135,6 +154,24 @@ public class User {
 	public void setToken(String token) {
 		this.token = token;
 	}
+	
+	public List<Recipe> getRecipes() {
+        return recipes;
+    }
+
+    public void setRecipes(List<Recipe> recipes) {
+        this.recipes = recipes;
+    }
+
+    public void addRecipe(Recipe recipe) {
+        recipes.add(recipe);
+        recipe.setUser(this);
+    }
+
+    public void removeRecipe(Recipe recipe) {
+        recipes.remove(recipe);
+        recipe.setUser(null);
+    }
 
 	@Override
 	public String toString() {

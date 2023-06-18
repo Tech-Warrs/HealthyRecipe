@@ -18,7 +18,7 @@ import com.wileyedge.healthyrecipe.exception.UsernameAlreadyExistsException;
 import com.wileyedge.healthyrecipe.model.User;
 
 @Service
-public class UserServiceImpl implements UserServiceInterface {
+public class UserServiceImpl implements IUserService {
 
 	private UserRepository userRepository;
 	private TokenUtils tokenUtils;
@@ -151,8 +151,10 @@ public class UserServiceImpl implements UserServiceInterface {
 
 		if (user != null && passwordEncoder.matches(password, user.getPassword())) {
 			String token = tokenUtils.generateToken(user);
-			user.setToken(token);
-			return token;
+			String cleanedToken = token.replace("Bearer ", "");
+			user.setToken(cleanedToken);
+			userRepository.save(user);
+			return cleanedToken;
 		} else {
 			throw new InvalidTokenException("Invalid token.");
 		}
@@ -168,6 +170,7 @@ public class UserServiceImpl implements UserServiceInterface {
 		User user = tokenUtils.getUserFromToken(authToken);
 
 		user.setToken("");
+		userRepository.save(user);
 	}
 
 
@@ -185,6 +188,14 @@ public class UserServiceImpl implements UserServiceInterface {
 		if (loggedInUser == null) {
 			throw new InvalidTokenException("Invalid token. No user found in the token.");
 		}
+		
+		// Check if the provided token matches the user's token
+	    if (!cleanedToken.equals(loggedInUser.getToken())) {
+	    	System.out.println("CleanedToken In CheckToken : " + cleanedToken);
+	    	System.out.println("UserToken In CheckToken: " + loggedInUser.getToken());
+	    	System.out.println("USERID in Check Token " + loggedInUser.getId());
+	        throw new InvalidTokenException("Invalid token. Token does not match the user's token.");
+	    }
 
 		return loggedInUser;
 	}

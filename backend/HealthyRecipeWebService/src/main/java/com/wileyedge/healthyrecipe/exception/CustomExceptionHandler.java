@@ -15,16 +15,12 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @RestControllerAdvice
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
-	@ExceptionHandler(Exception.class)
-	public final ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest req){
-		ExceptionResponse exResponse = new ExceptionResponse(new Date(), ex.getMessage(), "Exception Occur.");
-		return new ResponseEntity(exResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-	}
 	
+	// USER
 	@ExceptionHandler(UserNotFoundException.class)
 	public final ResponseEntity<Object> handleUserNotFoundException(UserNotFoundException ex, WebRequest req){
-		String searchCriteria = ex.getSearchCriteria(); 	    
-	    String message = "User not found for search criteria: " + searchCriteria;
+		String msg = ex.getMsg(); 	    
+	    String message = "User not found." + msg;
 	    ExceptionResponse exResponse = new ExceptionResponse(new Date(), message, "Exception Occur.");
 	    return new ResponseEntity<>(exResponse, HttpStatus.NOT_FOUND);
 	}
@@ -53,12 +49,34 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(exResponse, HttpStatus.UNAUTHORIZED);
     }
 
+	
+	
+	// RECIPE
+	@ExceptionHandler(RecipeNotFoundException.class)
+	public final ResponseEntity<Object> handleRecipeNotFoundExceptionn(RecipeNotFoundException ex, WebRequest req){
+		String searchCriteria = ex.getSearchCriteria(); 	    
+	    String message = "RECIPE NOT FOUND. " + searchCriteria;
+	    ExceptionResponse exResponse = new ExceptionResponse(new Date(), message, "Exception Occur.");
+	    return new ResponseEntity<>(exResponse, HttpStatus.NOT_FOUND);
+	}
+	
+	
+	
+	
+	// GENERAL
+
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
 			HttpHeaders headers, HttpStatus status, WebRequest request) {
 		ExceptionResponse exResponse = new ExceptionResponse(new Date(), "Validation Failed", ex.getBindingResult().toString());
 		System.out.println(exResponse);
 		return new ResponseEntity(exResponse, HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(Exception.class)
+	public final ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest req){
+		ExceptionResponse exResponse = new ExceptionResponse(new Date(), ex.getMessage(), "Exception Occur.");
+		return new ResponseEntity(exResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
 	

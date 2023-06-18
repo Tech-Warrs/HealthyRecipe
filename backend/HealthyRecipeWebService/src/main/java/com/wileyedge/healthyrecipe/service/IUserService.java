@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import com.wileyedge.healthyrecipe.model.User;
 
-public interface UserServiceInterface {
+public interface IUserService {
 
 	List<User> findAllUsers(String token);
 	

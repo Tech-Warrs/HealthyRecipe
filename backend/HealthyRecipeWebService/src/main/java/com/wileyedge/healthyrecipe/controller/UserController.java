@@ -1,10 +1,7 @@
 package com.wileyedge.healthyrecipe.controller;
 
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -13,20 +10,19 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.wileyedge.healthyrecipe.exception.UserNotFoundException;
 import com.wileyedge.healthyrecipe.model.LoginRequest;
 import com.wileyedge.healthyrecipe.model.User;
-import com.wileyedge.healthyrecipe.service.UserServiceInterface;
+import com.wileyedge.healthyrecipe.service.IUserService;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
 
-	private UserServiceInterface userService;
+	private IUserService userService;
 
 	@Autowired
-	public UserController(UserServiceInterface userService) {
+	public UserController(IUserService userService) {
 		this.userService = userService;
 	}
 	

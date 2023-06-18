@@ -5,14 +5,15 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
 public class UserNotFoundException extends RuntimeException {
-	 private String searchCriteria;
 
-	    public UserNotFoundException(String searchCriteria) {
-	        super("User not found " + searchCriteria);
-	        this.searchCriteria = searchCriteria;
+	private String msg;
+
+	    public UserNotFoundException(String msg) {
+	        super("User not found " + msg);
+	        this.msg = msg;
 	    }
 
-	    public String getSearchCriteria() {
-	        return searchCriteria;
+	    public String getMsg() {
+	        return msg;
 	    }
 }
