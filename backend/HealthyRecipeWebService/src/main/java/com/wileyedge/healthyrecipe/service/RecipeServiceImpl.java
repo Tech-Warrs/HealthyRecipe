@@ -1,17 +1,15 @@
 package com.wileyedge.healthyrecipe.service;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 import com.wileyedge.healthyrecipe.dao.RecipeRepository;
 import com.wileyedge.healthyrecipe.dao.UserRepository;
 import com.wileyedge.healthyrecipe.exception.RecipeNotFoundException;
+import com.wileyedge.healthyrecipe.exception.UnauthorizedAccessException;
 import com.wileyedge.healthyrecipe.exception.UserNotFoundException;
 import com.wileyedge.healthyrecipe.model.HealthCategory;
 import com.wileyedge.healthyrecipe.model.Recipe;
@@ -69,7 +67,63 @@ public class RecipeServiceImpl implements IRecipeService {
 
 		return recipeRepository.save(recipe);
 	}
+		
+	@Override
+	public Recipe updateRecipe(long recipeId, Recipe updatedRecipe, String token) {
+		// Validate token
+		User loggedInUser = authService.isTokenValid(token);
 
+		// Get the recipe by ID
+		Recipe recipe = recipeRepository.findById(recipeId)
+				.orElseThrow(() -> new RecipeNotFoundException("ID : " + recipeId));
+
+		// Check if the logged-in user is the owner of the recipe
+		if (!recipe.getUser().equals(loggedInUser)) {
+			throw new UnauthorizedAccessException("You are not authorized to update this recipe");
+		}
+
+		// Update the recipe details if provided and not empty
+	    if (updatedRecipe.getTitle() != null && !updatedRecipe.getTitle().isEmpty()) {
+	        recipe.setTitle(updatedRecipe.getTitle());
+	    }
+	    if (updatedRecipe.getShortDesc() != null && !updatedRecipe.getShortDesc().isEmpty()) {
+	        recipe.setShortDesc(updatedRecipe.getShortDesc());
+	    }
+	    if (updatedRecipe.getIngredients() != null && !updatedRecipe.getIngredients().isEmpty()) {
+	        recipe.setIngredients(updatedRecipe.getIngredients());
+	    }
+	    if (updatedRecipe.getInstructions() != null && !updatedRecipe.getInstructions().isEmpty()) {
+	        recipe.setInstructions(updatedRecipe.getInstructions());
+	    }
+	    if (updatedRecipe.getSuitableFor() != null && !updatedRecipe.getSuitableFor().isEmpty()) {
+	        recipe.setSuitableFor(updatedRecipe.getSuitableFor());
+	    }
+	    if (updatedRecipe.getNotSuitableFor() != null && !updatedRecipe.getNotSuitableFor().isEmpty()) {
+	        recipe.setNotSuitableFor(updatedRecipe.getNotSuitableFor());
+	    }
+	    if (updatedRecipe.getCookingDurationInMinutes() != 0) {
+	        recipe.setCookingDurationInMinutes(updatedRecipe.getCookingDurationInMinutes());
+	    }
+
+		return recipeRepository.save(recipe);
+	}
+	
+	@Override
+	public void deleteRecipe(long recipeId, String token) {
+		// Validate token
+		User loggedInUser = authService.isTokenValid(token);
+
+		// Get the recipe by ID
+		Recipe recipe = recipeRepository.findById(recipeId)
+				.orElseThrow(() -> new RecipeNotFoundException("ID : " + recipeId));
+
+		 // Check if the logged-in user is the owner of the recipe
+		if (!recipe.getUser().equals(loggedInUser)) {
+			throw new UnauthorizedAccessException("You are not authorized to delete this recipe");
+		}
+
+		recipeRepository.delete(recipe);
+	}
 
 
 
