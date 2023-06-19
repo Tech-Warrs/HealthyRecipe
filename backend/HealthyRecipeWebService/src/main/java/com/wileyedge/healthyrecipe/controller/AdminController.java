@@ -2,6 +2,7 @@ package com.wileyedge.healthyrecipe.controller;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +18,7 @@ import com.wileyedge.healthyrecipe.service.IAdminService;
 
 @RestController
 @RequestMapping("/admin")
+@CrossOrigin(origins = "*")
 public class AdminController {
 
 	private IAdminService adminService;
