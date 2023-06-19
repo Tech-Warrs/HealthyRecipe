@@ -50,34 +50,32 @@ public class MemberServiceImpl implements IMemberService {
 	}
 
 	@Override
-	public User updateUserDetailsById(User user, String token) {
+	public User updateUserDetailsById(User updatingUser, String token) {
 		//Validate token
 		User loggedInUser = authService.isTokenValid(token);
-
+		
 		//Check if the ID of user to be updated is the same as the Id of the user in the token
-		boolean isSameUser = loggedInUser.getId() == user.getId();
+		boolean isSameUser = loggedInUser.getId() == updatingUser.getId();
 		if(!isSameUser) {
-			throw new UnauthorizedAccessException("You are not authorized to edit details user ID : " + user.getId() );
+			throw new UnauthorizedAccessException("You are not authorized to edit details user ID : " + updatingUser.getId() );
+		}
+		
+		User existingUser = userRepository.findById(updatingUser.getId())
+				.orElseThrow(() -> new UserNotFoundException("User ID : " + updatingUser.getId()));
+
+		if (updatingUser.getEmail() != null && !updatingUser.getEmail().isBlank()) {
+			existingUser.setEmail(updatingUser.getEmail());
 		}
 
-		User existingUser = userRepository.findById(user.getId())
-				.orElseThrow(() -> new UserNotFoundException("User ID : " + user.getId()));
-
-		if (user.getUsername() != null && !user.getUsername().isBlank()) {
-			existingUser.setUsername(user.getUsername());
+		if (updatingUser.getFirstName() != null && !updatingUser.getFirstName().isBlank()) {
+			existingUser.setFirstName(updatingUser.getFirstName());
 		}
 
-		if (user.getEmail() != null && !user.getEmail().isBlank()) {
-			existingUser.setEmail(user.getEmail());
+		if (updatingUser.getLastName() != null && !updatingUser.getLastName().isBlank()) {
+			existingUser.setLastName(updatingUser.getLastName());
 		}
-
-		if (user.getFirstName() != null && !user.getFirstName().isBlank()) {
-			existingUser.setFirstName(user.getFirstName());
-		}
-
-		if (user.getLastName() != null && !user.getLastName().isBlank()) {
-			existingUser.setLastName(user.getLastName());
-		}
+		
+		// To add another exception message to let the user know about the fields that do not allow to update
 
 		return userRepository.save(existingUser);
 	}
