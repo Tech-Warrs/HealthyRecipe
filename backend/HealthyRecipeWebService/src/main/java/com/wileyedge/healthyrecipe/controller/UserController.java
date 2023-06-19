@@ -7,6 +7,7 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,23 +19,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wileyedge.healthyrecipe.exception.UserNotFoundException;
-import com.wileyedge.healthyrecipe.model.HealthCategory;
-import com.wileyedge.healthyrecipe.model.Recipe;
+//import com.wileyedge.healthyrecipe.model.HealthCategory;
+//import com.wileyedge.healthyrecipe.model.Recipe;
 import com.wileyedge.healthyrecipe.model.User;
 import com.wileyedge.healthyrecipe.service.IMemberService;
-import com.wileyedge.healthyrecipe.service.IRecipeService;
+//import com.wileyedge.healthyrecipe.service.IRecipeService;
 
 @RestController
 @RequestMapping("/users")
+@CrossOrigin(origins = "*")
 public class UserController {
 
 	private IMemberService memberService;
-	private IRecipeService recipeService;
+//	private IRecipeService recipeService;
 
 	@Autowired
-	public UserController(IMemberService memberService, IRecipeService recipeService) {
+	public UserController(IMemberService memberService /*IRecipeService recipeService*/ ) {
 		this.memberService = memberService;
-		this.recipeService = recipeService;
+//		this.recipeService = recipeService;
 	}
 	
 	@PostConstruct
@@ -57,47 +59,47 @@ public class UserController {
 		user.setRole("MEMBER"); 
 		memberService.createUser(user);
 
-		Recipe recipe1 = new Recipe();
-		recipe1.setTitle("Recipe 1");
-		recipe1.setShortDesc("This is recipe 1");
-		recipe1.setIngredients("Ingredient 1, Ingredient 2");
-		recipe1.setInstructions("Step 1, Step 2, Step 3");
-		recipe1.setCookingDurationInMinutes(30);
-
-
-		Recipe recipe2 = new Recipe();
-		recipe2.setTitle("Recipe 2");
-		recipe2.setShortDesc("This is recipe 2");
-		recipe2.setIngredients("Ingredient 1, Ingredient 2");
-		recipe2.setInstructions("Step 1, Step 2, Step 3");
-		recipe2.setCookingDurationInMinutes(45);
-
-
-		Set<HealthCategory> suitableForSet = new HashSet<>();
-		suitableForSet.add(HealthCategory.WEIGHT_LOSS);
-		suitableForSet.add(HealthCategory.HIGH_BLOOD_PRESSURE);
-		suitableForSet.add(HealthCategory.GENERAL);
-		
-		Set<HealthCategory> suitableForSet2 = new HashSet<>();
-		suitableForSet2.add(HealthCategory.IMMUNE_SUPPORT);
-		suitableForSet2.add(HealthCategory.DIGESTIVE_HEALTH);
-		suitableForSet2.add(HealthCategory.GENERAL);
-
-		recipe1.setSuitableFor(suitableForSet);
-		recipe2.setSuitableFor(suitableForSet2);
-
-		Set<HealthCategory> notSuitableForSet1 = new HashSet<>();
-		notSuitableForSet1.add(HealthCategory.DIABETES_MANAGEMENT);
-
-		Set<HealthCategory> notSuitableForSet2 = new HashSet<>();
-		notSuitableForSet2.add(HealthCategory.HEART_HEALTH);
-
-		recipe1.setNotSuitableFor(notSuitableForSet1);
-		recipe2.setNotSuitableFor(notSuitableForSet2);
-
-		recipe1.setUser(user);
-		recipe2.setUser(user);
-
+//		Recipe recipe1 = new Recipe();
+//		recipe1.setTitle("Recipe 1");
+//		recipe1.setShortDesc("This is recipe 1");
+//		recipe1.setIngredients("Ingredient 1, Ingredient 2");
+//		recipe1.setInstructions("Step 1, Step 2, Step 3");
+//		recipe1.setCookingDurationInMinutes(30);
+//
+//
+//		Recipe recipe2 = new Recipe();
+//		recipe2.setTitle("Recipe 2");
+//		recipe2.setShortDesc("This is recipe 2");
+//		recipe2.setIngredients("Ingredient 1, Ingredient 2");
+//		recipe2.setInstructions("Step 1, Step 2, Step 3");
+//		recipe2.setCookingDurationInMinutes(45);
+//
+//
+//		Set<HealthCategory> suitableForSet = new HashSet<>();
+//		suitableForSet.add(HealthCategory.WEIGHT_LOSS);
+//		suitableForSet.add(HealthCategory.HIGH_BLOOD_PRESSURE);
+//		suitableForSet.add(HealthCategory.GENERAL);
+//		
+//		Set<HealthCategory> suitableForSet2 = new HashSet<>();
+//		suitableForSet2.add(HealthCategory.IMMUNE_SUPPORT);
+//		suitableForSet2.add(HealthCategory.DIGESTIVE_HEALTH);
+//		suitableForSet2.add(HealthCategory.GENERAL);
+//
+//		recipe1.setSuitableFor(suitableForSet);
+//		recipe2.setSuitableFor(suitableForSet2);
+//
+//		Set<HealthCategory> notSuitableForSet1 = new HashSet<>();
+//		notSuitableForSet1.add(HealthCategory.DIABETES_MANAGEMENT);
+//
+//		Set<HealthCategory> notSuitableForSet2 = new HashSet<>();
+//		notSuitableForSet2.add(HealthCategory.HEART_HEALTH);
+//
+//		recipe1.setNotSuitableFor(notSuitableForSet1);
+//		recipe2.setNotSuitableFor(notSuitableForSet2);
+//
+//		recipe1.setUser(user);
+//		recipe2.setUser(user);
+//
 //		recipeService.createRecipe(recipe1);
 //		recipeService.createRecipe(recipe2);
 
@@ -110,12 +112,6 @@ public class UserController {
 		return createdUser;
 	}
 
-	@PutMapping("/{userId}")
-	public User updateUserDetailsById(@PathVariable long userId, @RequestBody User userDetails, @RequestHeader("Authorization") String token) {
-		userDetails.setId(userId);
-		User updatedUser = memberService.updateUserDetailsById(userDetails,token);
-		return updatedUser;
-	}
 	
 	@GetMapping("/{userId}")
 	public User getUserById(@PathVariable long userId, @RequestHeader("Authorization") String token) {
@@ -142,6 +138,13 @@ public class UserController {
 		} else {
 			throw new UserNotFoundException("Username: " + username);
 		}
+	}
+	
+	@PutMapping("/{userId}")
+	public User updateUserDetailsById(@PathVariable long userId, @RequestBody User userDetails, @RequestHeader("Authorization") String token) {
+		userDetails.setId(userId);
+		User updatedUser = memberService.updateUserDetailsById(userDetails,token);
+		return updatedUser;
 	}
 
 	@DeleteMapping("/{userIdToDelete}")
