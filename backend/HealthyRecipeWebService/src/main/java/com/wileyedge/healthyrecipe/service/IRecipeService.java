@@ -17,6 +17,10 @@ public interface IRecipeService {
 
 	Recipe createRecipe(Recipe recipe, String token);
 
+	void deleteRecipe(long recipeId, String token);
+
+	Recipe updateRecipe(long recipeId, Recipe updatedRecipe, String token);
+
 //	List<Recipe> getRecipesByUserId(Long userId);
 	   
 
