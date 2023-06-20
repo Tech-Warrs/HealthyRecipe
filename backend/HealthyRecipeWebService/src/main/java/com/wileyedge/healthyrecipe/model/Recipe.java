@@ -3,20 +3,11 @@ package com.wileyedge.healthyrecipe.model;
 import java.io.Serializable;
 import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.web.multipart.MultipartFile;
 
 @Entity
 @Table(name = "recipe")
@@ -49,10 +40,20 @@ public class Recipe implements Serializable{
 	
 	@Column(name = "duration")
 	private int cookingDurationInMinutes;
+
+
 	
 	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
 	private User user;
+
+
+	@Transient  // ignore this when send to database jpa
+	@JsonIgnore // don't display in json output
+	private MultipartFile imageFile;
+
+	@Column(name = "imageUrl")
+	private String imageUrl;
 
 	public Recipe() {
 	}
@@ -66,6 +67,18 @@ public class Recipe implements Serializable{
 		this.suitableFor = suitableFor;
 		this.notSuitableFor = notSuitableFor;
 		this.cookingDurationInMinutes = cookingDurationInMinutes;
+	}
+
+	public Recipe(String title, String shortDesc, String ingredients, String instructions,
+				  Set<HealthCategory> suitableFor, Set<HealthCategory> notSuitableFor, int cookingDurationInMinutes, MultipartFile imageFile) {
+		this.title = title;
+		this.shortDesc = shortDesc;
+		this.ingredients = ingredients;
+		this.instructions = instructions;
+		this.suitableFor = suitableFor;
+		this.notSuitableFor = notSuitableFor;
+		this.cookingDurationInMinutes = cookingDurationInMinutes;
+		this.imageFile = imageFile;
 	}
 	
 
@@ -139,6 +152,22 @@ public class Recipe implements Serializable{
 
 	public void setUser(User user) {
 		this.user = user;
+	}
+
+	public MultipartFile getImageFile() {
+		return imageFile;
+	}
+
+	public void setImageFile(MultipartFile imageFile) {
+		this.imageFile = imageFile;
+	}
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
 	}
 
 	@Override
