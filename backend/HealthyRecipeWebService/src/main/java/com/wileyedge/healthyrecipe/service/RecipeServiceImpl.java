@@ -1,8 +1,10 @@
 package com.wileyedge.healthyrecipe.service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import com.wileyedge.healthyrecipe.model.RecipeDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,7 @@ import com.wileyedge.healthyrecipe.exception.UserNotFoundException;
 import com.wileyedge.healthyrecipe.model.HealthCategory;
 import com.wileyedge.healthyrecipe.model.Recipe;
 import com.wileyedge.healthyrecipe.model.User;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class RecipeServiceImpl implements IRecipeService {
@@ -22,11 +25,14 @@ public class RecipeServiceImpl implements IRecipeService {
 	private UserRepository userRepository;
 	private AuthService authService;
 
+	private IImageStorageService imageStorageService;
+
 	@Autowired
-	public RecipeServiceImpl(RecipeRepository recipeRepository,UserRepository userRepository, AuthService authService) {
+	public RecipeServiceImpl(RecipeRepository recipeRepository,UserRepository userRepository, AuthService authService, IImageStorageService imageStorageService) {
 		this.recipeRepository = recipeRepository;
 		this.userRepository = userRepository;
 		this.authService = authService;
+		this.imageStorageService = imageStorageService;
 	}
 
 	@Override
@@ -57,13 +63,37 @@ public class RecipeServiceImpl implements IRecipeService {
 	}
 
 	@Override
-	public Recipe createRecipe(Recipe recipe, String token) {
+	public Recipe createRecipe(RecipeDTO recipeDTO, MultipartFile image, String token) {
+		System.out.println("Inside createRecioe of Service layer");
 
 		//Validate token
 		User loggedInUser = authService.isTokenValid(token);
 
-		//Associate user with recipe
+
+		Recipe recipe = new Recipe();
+
+		// Upload image file to S3 and get the S3 key
+		String s3Key = "";
+		try {
+			System.out.println("Image in Service layer: " + image);
+			s3Key = imageStorageService.uploadImage(image);
+			System.out.println("After creating S3: " + s3Key);
+			recipe.setImageFile(null);
+			recipe.setImageUrl(s3Key);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		// Associate user with recipe
 		recipe.setUser(loggedInUser);
+
+		// Set all fields of recipe
+		recipe.setIngredients(recipeDTO.getIngredients());
+		recipe.setInstructions(recipeDTO.getInstructions());
+		recipe.setTitle(recipeDTO.getTitle());
+		recipe.setSuitableFor(recipeDTO.getSuitableFor());
+		recipe.setCookingDurationInMinutes(recipeDTO.getCookingDurationInMinutes());
+		recipe.setShortDesc(recipeDTO.getShortDesc());
 
 		return recipeRepository.save(recipe);
 	}
