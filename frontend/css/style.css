@@ -1,0 +1,15 @@
+@font-face {
+  font-family: 'gilroy';
+  src: url('../fonts/gilroy-regular.woff') format('woff');
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  font-family: 'gilroy', Arial, sans-serif;
+}
+
+footer {
+  margin-top: auto;
+}
