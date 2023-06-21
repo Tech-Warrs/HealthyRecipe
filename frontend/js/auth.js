@@ -36,6 +36,7 @@ function showLoggedInUser(user) {
 
   $("#login-button").hide();
   $("#signup-button").hide();
+  $("#create-recipe-btn").show();
 
   const logoutNav = $("<li>").addClass("nav-item").attr("id", "logout-button");
   userNav.append(logoutNav);
