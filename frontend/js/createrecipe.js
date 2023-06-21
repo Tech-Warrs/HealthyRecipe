@@ -44,9 +44,7 @@ $(document).ready(function () {
 
     try {
       const user = JSON.parse(localStorage.getItem("user"));
-      console.log("user", user);
       const token = user.token;
-      console.log("token", token);
 
       const response = await fetch(createRecipeEndpoint, {
         method: "POST",

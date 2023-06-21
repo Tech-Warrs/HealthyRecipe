@@ -63,6 +63,13 @@ const displayRecipes = (recipes) => {
     // Append the card body div to the card div
     cardBodyDiv.appendTo(cardDiv);
 
+    // Create the button and append to the card div
+    $("<a>")
+      .addClass("btn btn-primary")
+      .attr("href", `recipe.html?recipeId=${recipe.recipeId}`)
+      .text("Go to Recipe")
+      .appendTo(cardDiv);
+
     // Append the card div to the column div
     cardDiv.appendTo(colDiv);
 
@@ -70,3 +77,4 @@ const displayRecipes = (recipes) => {
     recipeContainer.append(colDiv);
   });
 };
+
