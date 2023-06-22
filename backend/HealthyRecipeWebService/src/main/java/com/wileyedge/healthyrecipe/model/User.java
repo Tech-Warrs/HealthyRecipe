@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 
 @Entity
-@Table(name = "User")
+@Table(name = "user_tbl")
 public class User implements Serializable {
 
 	private static final long serialVersionUID = -8388637334633870676L;
