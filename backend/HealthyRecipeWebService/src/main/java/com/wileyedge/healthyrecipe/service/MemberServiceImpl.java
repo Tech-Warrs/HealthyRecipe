@@ -16,11 +16,11 @@ import com.wileyedge.healthyrecipe.model.User;
 public class MemberServiceImpl implements IMemberService {
 
 	private UserRepository userRepository;
-	private AuthService authService;
+	private IAuthService authService;
 	private BCryptPasswordEncoder passwordEncoder;
 
 	@Autowired
-	public MemberServiceImpl(UserRepository userRepository,AuthService authService, BCryptPasswordEncoder passwordEncoder) {
+	public MemberServiceImpl(UserRepository userRepository,IAuthService authService, BCryptPasswordEncoder passwordEncoder) {
 		this.userRepository = userRepository;
 		this.authService = authService;
 		this.passwordEncoder = passwordEncoder;

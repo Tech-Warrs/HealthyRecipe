@@ -91,12 +91,18 @@ public class AdminServiceImpl implements IAdminService {
 	public List<User> findAllUsersByAdmin(String token) {
 		//Check if token is valid
 		User loggedInUser = authService.isTokenValid(token);
-
+		
+		if(loggedInUser == null) {
+			throw new InvalidTokenException("Invalid token");
+		}
+		
 		// Check if the user has the role "ADMIN"
 		boolean loggedInUserIsAdmin = authService.isLoggedInUserHasAdminRole(loggedInUser);
 		if (!loggedInUserIsAdmin) {
 			throw new UnauthorizedAccessException("ACCESS Denied for action : Get all users.");
 		}
+		
+		
 
 		return userRepository.findAll();
 	}
