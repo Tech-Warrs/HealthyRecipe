@@ -52,21 +52,24 @@ public class AuthService implements IAuthService {
 	    // Clean the token by removing the "Bearer " prefix
 	    String cleanedToken = token.replace("Bearer ", "");
 
-	    // Validates the integrity and authenticity of the token based on its signature and other integrity checks
-	    tokenUtils.checkIfJwtToken(cleanedToken);
+	    try {
+	        // Validates the integrity and authenticity of the token based on its signature and other integrity checks
+	        tokenUtils.checkIfJwtToken(cleanedToken);
 
-	    // Validate user embedded in the token actually exists
-	    User loggedInUser = tokenUtils.getUserFromToken(cleanedToken);
-	    if (loggedInUser == null) {
-	        throw new InvalidTokenException("Invalid token. No user found in the token.");
+	        // Validate user embedded in the token actually exists
+	        User loggedInUser = tokenUtils.getUserFromToken(cleanedToken);
+
+	        // Check if the provided token matches the user's token stored in DB
+	        if (loggedInUser != null && cleanedToken.equals(loggedInUser.getToken())) {
+	            return loggedInUser;
+	        }else {
+	        	throw new InvalidTokenException("Invalid token");
+	        }
+	    } catch (Exception e) {
+	    	System.out.println(e.getMessage());
 	    }
 
-	    // Check if the provided token matches the user's token stored in DB
-	    if (!cleanedToken.equals(loggedInUser.getToken())) {
-	        throw new InvalidTokenException("Invalid token. Token does not match the user's token.");
-	    }
-
-	    return loggedInUser;
+	    return null;
 	}
 
 	
