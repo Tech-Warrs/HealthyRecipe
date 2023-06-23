@@ -1,9 +1,6 @@
 package com.wileyedge.healthyrecipe.controller;
 
 
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wileyedge.healthyrecipe.exception.UserNotFoundException;
-//import com.wileyedge.healthyrecipe.model.HealthCategory;
-//import com.wileyedge.healthyrecipe.model.Recipe;
 import com.wileyedge.healthyrecipe.model.User;
 import com.wileyedge.healthyrecipe.service.IMemberService;
-//import com.wileyedge.healthyrecipe.service.IRecipeService;
+
 
 @RestController
 @RequestMapping("/users")
@@ -31,78 +26,34 @@ import com.wileyedge.healthyrecipe.service.IMemberService;
 public class UserController {
 
 	private IMemberService memberService;
-//	private IRecipeService recipeService;
 
 	@Autowired
-	public UserController(IMemberService memberService /*IRecipeService recipeService*/ ) {
+	public UserController(IMemberService memberService) {
 		this.memberService = memberService;
-//		this.recipeService = recipeService;
 	}
 	
 	@PostConstruct
 	public void createDefaultAdmin() {
-		User defaultAdmin = new User();
-		defaultAdmin.setUsername("admin");
-		defaultAdmin.setEmail("admin@example.com");
-		defaultAdmin.setFirstName("Admin");
-		defaultAdmin.setPassword("Admin@123");
-		defaultAdmin.setRole("ADMIN");
-		memberService.createUser(defaultAdmin);
+	    if (!memberService.existsByEmail("admin")) {
+	        User defaultAdmin = new User();
+	        defaultAdmin.setUsername("admin");
+	        defaultAdmin.setEmail("admin@example.com");
+	        defaultAdmin.setFirstName("Admin");
+	        defaultAdmin.setPassword("Admin@123");
+	        defaultAdmin.setRole("ADMIN");
+	        memberService.createUser(defaultAdmin);
+	    }
 
-
-		User user = new User();
-		user.setUsername("exampleUser");
-		user.setEmail("user@example.com");
-		user.setPassword("Password@123");
-		user.setFirstName("Rafael");
-		user.setLastName("Dawson");
-		user.setRole("MEMBER"); 
-		memberService.createUser(user);
-
-//		Recipe recipe1 = new Recipe();
-//		recipe1.setTitle("Recipe 1");
-//		recipe1.setShortDesc("This is recipe 1");
-//		recipe1.setIngredients("Ingredient 1, Ingredient 2");
-//		recipe1.setInstructions("Step 1, Step 2, Step 3");
-//		recipe1.setCookingDurationInMinutes(30);
-//
-//
-//		Recipe recipe2 = new Recipe();
-//		recipe2.setTitle("Recipe 2");
-//		recipe2.setShortDesc("This is recipe 2");
-//		recipe2.setIngredients("Ingredient 1, Ingredient 2");
-//		recipe2.setInstructions("Step 1, Step 2, Step 3");
-//		recipe2.setCookingDurationInMinutes(45);
-//
-//
-//		Set<HealthCategory> suitableForSet = new HashSet<>();
-//		suitableForSet.add(HealthCategory.WEIGHT_LOSS);
-//		suitableForSet.add(HealthCategory.HIGH_BLOOD_PRESSURE);
-//		suitableForSet.add(HealthCategory.GENERAL);
-//		
-//		Set<HealthCategory> suitableForSet2 = new HashSet<>();
-//		suitableForSet2.add(HealthCategory.IMMUNE_SUPPORT);
-//		suitableForSet2.add(HealthCategory.DIGESTIVE_HEALTH);
-//		suitableForSet2.add(HealthCategory.GENERAL);
-//
-//		recipe1.setSuitableFor(suitableForSet);
-//		recipe2.setSuitableFor(suitableForSet2);
-//
-//		Set<HealthCategory> notSuitableForSet1 = new HashSet<>();
-//		notSuitableForSet1.add(HealthCategory.DIABETES_MANAGEMENT);
-//
-//		Set<HealthCategory> notSuitableForSet2 = new HashSet<>();
-//		notSuitableForSet2.add(HealthCategory.HEART_HEALTH);
-//
-//		recipe1.setNotSuitableFor(notSuitableForSet1);
-//		recipe2.setNotSuitableFor(notSuitableForSet2);
-//
-//		recipe1.setUser(user);
-//		recipe2.setUser(user);
-//
-//		recipeService.createRecipe(recipe1);
-//		recipeService.createRecipe(recipe2);
-
+	    if (!memberService.existsByUsername("exampleUser")) {
+	        User user = new User();
+	        user.setUsername("exampleUser");
+	        user.setEmail("user@example.com");
+	        user.setPassword("Password@123");
+	        user.setFirstName("Rafael");
+	        user.setLastName("Dawson");
+	        user.setRole("MEMBER");
+	        memberService.createUser(user);
+	    }
 	}
 
 	
