@@ -1,6 +1,7 @@
 package com.wileyedge.healthyrecipe.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,21 +32,28 @@ public class AuthService implements IAuthService {
 	
 	@Override
 	public String loginUser(String identifier, String password) {
-		boolean isEmail = identifier.contains("@") && identifier.contains(".");
-		User user = isEmail ? userRepository.findByEmail(identifier) : userRepository.findByUsername(identifier);
+	    boolean isEmail = identifier.contains("@") && identifier.contains(".");
+	    User user = isEmail ? userRepository.findByEmail(identifier) : userRepository.findByUsername(identifier);
 
-		if(user == null) {
-			throw new InvalidCredentialException("Incorrect username or email.");
-		}else if(!passwordEncoder.matches(password, user.getPassword())){
-			throw new InvalidCredentialException("Incorrect password.");
-		}else {
-			 String token = tokenUtils.generateToken(user);
-				String cleanedToken = token.replace("Bearer ", "");
-				user.setToken(cleanedToken);
-				userRepository.save(user);
-				return cleanedToken;
-		}
+	    if (user == null) {
+	        throw new InvalidCredentialException("Incorrect username or email.");
+	    } else if (!passwordEncoder.matches(password, user.getPassword())) {
+	        throw new InvalidCredentialException("Incorrect password.");
+	    } else {
+	        String token = tokenUtils.generateToken(user);
+
+	        // Clean the token to remove "Bearer " prefix
+	        String cleanedToken = token.replace("Bearer ", "");
+
+	        // Hash the cleaned token using bcrypt
+	        String hashedToken = BCrypt.hashpw(cleanedToken, BCrypt.gensalt());
+
+	        user.setToken(hashedToken);
+	        userRepository.save(user);
+	        return token;
+	    }
 	}
+
 	
 	@Override
 	public User isTokenValid(String token) {
@@ -53,24 +61,28 @@ public class AuthService implements IAuthService {
 	    String cleanedToken = token.replace("Bearer ", "");
 
 	    try {
-	        // Validates the integrity and authenticity of the token based on its signature and other integrity checks
+	        // Validates the integrity and authenticity of the token based on its signature
 	        tokenUtils.checkIfJwtToken(cleanedToken);
 
 	        // Validate user embedded in the token actually exists
 	        User loggedInUser = tokenUtils.getUserFromToken(cleanedToken);
 
-	        // Check if the provided token matches the user's token stored in DB
-	        if (loggedInUser != null && cleanedToken.equals(loggedInUser.getToken())) {
+	        // Retrieve token from DB basedOn LoggedInUser info
+	        String storedToken = userRepository.findById(loggedInUser.getId()).orElse(null).getToken();
+
+	        // Check if the provided token matches the user's stored hashed token
+	        if (storedToken != null && BCrypt.checkpw(cleanedToken, storedToken)) {
 	            return loggedInUser;
-	        }else {
-	        	throw new InvalidTokenException("Invalid token");
+	        } else {
+	            throw new InvalidTokenException("Invalid token");
 	        }
 	    } catch (Exception e) {
-	    	System.out.println(e.getMessage());
+	        System.out.println(e.getMessage());
 	    }
 
 	    return null;
 	}
+
 
 	
 	@Override

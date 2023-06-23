@@ -1,6 +1,8 @@
 package com.wileyedge.healthyrecipe.service;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -98,9 +100,11 @@ public class RecipeServiceImpl implements IRecipeService {
 		recipe.setSuitableFor(recipeDTO.getSuitableFor());
 		recipe.setCookingDurationInMinutes(recipeDTO.getCookingDurationInMinutes());
 		recipe.setShortDesc(recipeDTO.getShortDesc());
+		
+		// Set createdDate to current time
+		recipe.setCreatedAt(LocalDate.now());
 
 		return recipeRepository.save(recipe);
-
 	}
 
 
@@ -140,6 +144,9 @@ public class RecipeServiceImpl implements IRecipeService {
 		if (updatedRecipe.getCookingDurationInMinutes() != 0) {
 			recipe.setCookingDurationInMinutes(updatedRecipe.getCookingDurationInMinutes());
 		}
+			
+		// Set updatedDate to current time
+		recipe.setLastUpdated(LocalDate.now());
 
 		return recipeRepository.save(recipe);
 	}
@@ -160,9 +167,6 @@ public class RecipeServiceImpl implements IRecipeService {
 
 		recipeRepository.delete(recipe);
 	}
-
-
-
 
 
 }

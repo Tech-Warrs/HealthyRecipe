@@ -1,13 +1,26 @@
 package com.wileyedge.healthyrecipe.model;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Set;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "recipe")
@@ -42,7 +55,7 @@ public class Recipe implements Serializable{
 	private int cookingDurationInMinutes;
 
 
-	
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
 	private User user;
@@ -54,6 +67,12 @@ public class Recipe implements Serializable{
 
 	@Column(name = "imageUrl")
 	private String imageUrl;
+	
+	@Column
+	private LocalDate createdAt;
+	
+	@Column
+	private LocalDate lastUpdated;
 
 	public Recipe() {
 	}
@@ -169,12 +188,31 @@ public class Recipe implements Serializable{
 	public void setImageUrl(String imageUrl) {
 		this.imageUrl = imageUrl;
 	}
+	
+
+	public LocalDate getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(LocalDate createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public LocalDate getLastUpdated() {
+		return lastUpdated;
+	}
+
+	public void setLastUpdated(LocalDate lastUpdated) {
+		this.lastUpdated = lastUpdated;
+	}
 
 	@Override
 	public String toString() {
 		return "Recipe [recipeId=" + recipeId + ", title=" + title + ", shortDesc=" + shortDesc + ", ingredients="
 				+ ingredients + ", instructions=" + instructions + ", suitableFor=" + suitableFor + ", notSuitableFor="
-				+ notSuitableFor + ", cookingDurationInMinutes=" + cookingDurationInMinutes + ", user=" + user + "]";
+				+ notSuitableFor + ", cookingDurationInMinutes=" + cookingDurationInMinutes + ", imageUrl=" + imageUrl
+				+ "]";
 	}
-	
+
+
 }
