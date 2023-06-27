@@ -1,5 +1,5 @@
-const loginEndpoint = "http://localhost:8181/auth/login";
-const userEndpoint = "http://localhost:8181/users/username";
+const loginEndpoint = "http://localhost:8282/auth/login";
+const userEndpoint = "http://localhost:8282/users/username";
 
 $(document).ready(function () {
   $("#login-form").on("submit", async function (e) {

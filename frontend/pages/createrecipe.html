@@ -47,18 +47,6 @@
             </li>
           </ul>
 
-          <!-- Middle of Navbar -->
-          <!-- <ul
-            class="navbar-nav mx-auto d-flex justify-content-center"
-            style="position: absolute; left: 50%; transform: translateX(-50%)"
-          >
-            <li class="nav-item" style="display: none" id="create-recipe-btn">
-              <a class="nav-link btn-create-recipe" href="createrecipe.html"
-                >Create Recipe</a
-              >
-            </li>
-          </ul> -->
-
           <!-- Right side -->
           <ul class="navbar-nav ms-auto" id="user-nav">
             <li class="nav-item" id="user-recipes">
@@ -75,179 +63,188 @@
       </div>
     </nav>
 
-    <div class="container">
+    <div class="container mt-5">
       <h1 class="mt-5 mb-4 text-center">Create Recipe</h1>
-      <form id="create-recipe-form" enctype="multipart/form-data">
-        <div class="mb-3">
-          <label for="title" class="form-label">Title</label>
-          <input
-            type="text"
-            class="form-control"
-            id="title"
-            name="title"
-            required
-          />
+      <div class="row">
+        <div class="col-lg-6 mx-auto">
+          <form id="create-recipe-form" enctype="multipart/form-data">
+            <div class="mb-3">
+              <label for="title" class="form-label">Title</label>
+              <input
+                type="text"
+                class="form-control"
+                id="title"
+                name="title"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label for="shortDesc" class="form-label"
+                >Short Description</label
+              >
+              <textarea
+                class="form-control"
+                id="shortDesc"
+                name="shortDesc"
+                required
+              ></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="ingredients" class="form-label">Ingredients</label>
+              <textarea
+                class="form-control"
+                id="ingredients"
+                name="ingredients"
+                required
+              ></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="instructions" class="form-label">Instructions</label>
+              <textarea
+                class="form-control"
+                id="instructions"
+                name="instructions"
+                required
+              ></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="cookingDurationInMinutes" class="form-label"
+                >Cooking Duration (In Minutes)</label
+              >
+              <input
+                type="number"
+                class="form-control"
+                id="cookingDurationInMinutes"
+                name="cookingDurationInMinutes"
+                required
+              />
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="suitableFor" class="form-label">Suitable For</label
+                ><br />
+                <input
+                  type="checkbox"
+                  id="general"
+                  name="suitableFor"
+                  value="GENERAL"
+                />
+                <label for="general">General</label><br />
+                <input
+                  type="checkbox"
+                  id="weightLoss"
+                  name="suitableFor"
+                  value="WEIGHT_LOSS"
+                />
+                <label for="weightLoss">Weight Loss</label><br />
+                <input
+                  type="checkbox"
+                  id="highBloodPressure"
+                  name="suitableFor"
+                  value="HIGH_BLOOD_PRESSURE"
+                />
+                <label for="highBloodPressure">High Blood Pressure</label><br />
+                <input
+                  type="checkbox"
+                  id="digestiveHealth"
+                  name="suitableFor"
+                  value="DIGESTIVE_HEALTH"
+                />
+                <label for="digestiveHealth">Digestive Health</label><br />
+                <input
+                  type="checkbox"
+                  id="heartHealth"
+                  name="suitableFor"
+                  value="HEART_HEALTH"
+                />
+                <label for="heartHealth">Heart Health</label><br />
+                <input
+                  type="checkbox"
+                  id="diabetesManagement"
+                  name="suitableFor"
+                  value="DIABETES_MANAGEMENT"
+                />
+                <label for="diabetesManagement">Diabetes Management</label
+                ><br />
+                <input
+                  type="checkbox"
+                  id="immuneSupport"
+                  name="suitableFor"
+                  value="IMMUNE_SUPPORT"
+                />
+                <label for="immuneSupport">Immune Support</label><br />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="notSuitableFor" class="form-label"
+                  >Not Suitable For</label
+                ><br />
+                <input
+                  type="checkbox"
+                  id="generalNot"
+                  name="notSuitableFor"
+                  value="GENERAL"
+                />
+                <label for="generalNot">General</label><br />
+                <input
+                  type="checkbox"
+                  id="weightLossNot"
+                  name="notSuitableFor"
+                  value="WEIGHT_LOSS"
+                />
+                <label for="weightLossNot">Weight Loss</label><br />
+                <input
+                  type="checkbox"
+                  id="highBloodPressureNot"
+                  name="notSuitableFor"
+                  value="HIGH_BLOOD_PRESSURE"
+                />
+                <label for="highBloodPressureNot">High Blood Pressure</label
+                ><br />
+                <input
+                  type="checkbox"
+                  id="digestiveHealthNot"
+                  name="notSuitableFor"
+                  value="DIGESTIVE_HEALTH"
+                />
+                <label for="digestiveHealthNot">Digestive Health</label><br />
+                <input
+                  type="checkbox"
+                  id="heartHealthNot"
+                  name="notSuitableFor"
+                  value="HEART_HEALTH"
+                />
+                <label for="heartHealthNot">Heart Health</label><br />
+                <input
+                  type="checkbox"
+                  id="diabetesManagementNot"
+                  name="notSuitableFor"
+                  value="DIABETES_MANAGEMENT"
+                />
+                <label for="diabetesManagementNot">Diabetes Management</label
+                ><br />
+                <input
+                  type="checkbox"
+                  id="immuneSupportNot"
+                  name="notSuitableFor"
+                  value="IMMUNE_SUPPORT"
+                />
+                <label for="immuneSupportNot">Immune Support</label><br />
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="imageFile" class="form-label">Image File</label>
+              <input
+                type="file"
+                class="form-control"
+                id="imageFile"
+                name="imageFile"
+                accept="image/*"
+              />
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Submit</button>
+          </form>
         </div>
-        <div class="mb-3">
-          <label for="shortDesc" class="form-label">Short Description</label>
-          <textarea
-            class="form-control"
-            id="shortDesc"
-            name="shortDesc"
-            required
-          ></textarea>
-        </div>
-        <div class="mb-3">
-          <label for="ingredients" class="form-label">Ingredients</label>
-          <textarea
-            class="form-control"
-            id="ingredients"
-            name="ingredients"
-            required
-          ></textarea>
-        </div>
-        <div class="mb-3">
-          <label for="instructions" class="form-label">Instructions</label>
-          <textarea
-            class="form-control"
-            id="instructions"
-            name="instructions"
-            required
-          ></textarea>
-        </div>
-        <div class="mb-3">
-          <label for="cookingDurationInMinutes" class="form-label"
-            >Cooking Duration (In Minutes)</label
-          >
-          <input
-            type="number"
-            class="form-control"
-            id="cookingDurationInMinutes"
-            name="cookingDurationInMinutes"
-            required
-          />
-        </div>
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label for="suitableFor" class="form-label">Suitable For</label
-            ><br />
-            <input
-              type="checkbox"
-              id="general"
-              name="suitableFor"
-              value="GENERAL"
-            />
-            <label for="general">General</label><br />
-            <input
-              type="checkbox"
-              id="weightLoss"
-              name="suitableFor"
-              value="WEIGHT_LOSS"
-            />
-            <label for="weightLoss">Weight Loss</label><br />
-            <input
-              type="checkbox"
-              id="highBloodPressure"
-              name="suitableFor"
-              value="HIGH_BLOOD_PRESSURE"
-            />
-            <label for="highBloodPressure">High Blood Pressure</label><br />
-            <input
-              type="checkbox"
-              id="digestiveHealth"
-              name="suitableFor"
-              value="DIGESTIVE_HEALTH"
-            />
-            <label for="digestiveHealth">Digestive Health</label><br />
-            <input
-              type="checkbox"
-              id="heartHealth"
-              name="suitableFor"
-              value="HEART_HEALTH"
-            />
-            <label for="heartHealth">Heart Health</label><br />
-            <input
-              type="checkbox"
-              id="diabetesManagement"
-              name="suitableFor"
-              value="DIABETES_MANAGEMENT"
-            />
-            <label for="diabetesManagement">Diabetes Management</label><br />
-            <input
-              type="checkbox"
-              id="immuneSupport"
-              name="suitableFor"
-              value="IMMUNE_SUPPORT"
-            />
-            <label for="immuneSupport">Immune Support</label><br />
-          </div>
-          <div class="col-md-6 mb-3">
-            <label for="notSuitableFor" class="form-label"
-              >Not Suitable For</label
-            ><br />
-            <input
-              type="checkbox"
-              id="generalNot"
-              name="notSuitableFor"
-              value="GENERAL"
-            />
-            <label for="generalNot">General</label><br />
-            <input
-              type="checkbox"
-              id="weightLossNot"
-              name="notSuitableFor"
-              value="WEIGHT_LOSS"
-            />
-            <label for="weightLossNot">Weight Loss</label><br />
-            <input
-              type="checkbox"
-              id="highBloodPressureNot"
-              name="notSuitableFor"
-              value="HIGH_BLOOD_PRESSURE"
-            />
-            <label for="highBloodPressureNot">High Blood Pressure</label><br />
-            <input
-              type="checkbox"
-              id="digestiveHealthNot"
-              name="notSuitableFor"
-              value="DIGESTIVE_HEALTH"
-            />
-            <label for="digestiveHealthNot">Digestive Health</label><br />
-            <input
-              type="checkbox"
-              id="heartHealthNot"
-              name="notSuitableFor"
-              value="HEART_HEALTH"
-            />
-            <label for="heartHealthNot">Heart Health</label><br />
-            <input
-              type="checkbox"
-              id="diabetesManagementNot"
-              name="notSuitableFor"
-              value="DIABETES_MANAGEMENT"
-            />
-            <label for="diabetesManagementNot">Diabetes Management</label><br />
-            <input
-              type="checkbox"
-              id="immuneSupportNot"
-              name="notSuitableFor"
-              value="IMMUNE_SUPPORT"
-            />
-            <label for="immuneSupportNot">Immune Support</label><br />
-          </div>
-        </div>
-        <div class="mb-3">
-          <label for="imageFile" class="form-label">Image File</label>
-          <input
-            type="file"
-            class="form-control"
-            id="imageFile"
-            name="imageFile"
-            accept="image/*"
-          />
-        </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
-      </form>
+      </div>
     </div>
 
     <footer

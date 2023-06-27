@@ -1,4 +1,4 @@
-const createRecipeEndpoint = "http://localhost:8181/recipes";
+const createRecipeEndpoint = "http://localhost:8282/recipes";
 
 $(document).ready(function () {
   $("#create-recipe-form").on("submit", async function (e) {

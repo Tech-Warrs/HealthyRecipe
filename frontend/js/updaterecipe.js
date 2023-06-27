@@ -1,5 +1,5 @@
-const updateRecipeEndpoint = "http://localhost:8181/recipes";
-const getRecipeEndpoint = "http://localhost:8181/recipes";
+const updateRecipeEndpoint = "http://localhost:8282/recipes";
+const getRecipeEndpoint = "http://localhost:8282/recipes";
 
 $(document).ready(function () {
   const params = new URLSearchParams(window.location.search);

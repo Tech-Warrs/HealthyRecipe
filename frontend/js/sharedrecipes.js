@@ -1,4 +1,4 @@
-const getAllRecipesEndpoint = "http://localhost:8181/recipes";
+const getAllRecipesEndpoint = "http://localhost:8282/recipes";
 
 $(document).ready(function () {
   fetchRecipes();

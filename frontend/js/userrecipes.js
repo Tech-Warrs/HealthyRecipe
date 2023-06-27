@@ -1,5 +1,5 @@
-const getRecipesByUserEndpoint = "http://localhost:8181/recipes/users/";
-const deleteRecipeEndpoint = "http://localhost:8181/recipes/";
+const getRecipesByUserEndpoint = "http://localhost:8282/recipes/users/";
+const deleteRecipeEndpoint = "http://localhost:8282/recipes/";
 
 const userJson = localStorage.getItem("user");
 const user = JSON.parse(userJson);

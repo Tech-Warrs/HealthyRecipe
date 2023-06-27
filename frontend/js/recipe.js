@@ -5,7 +5,7 @@ $(document).ready(async function () {
   const recipeId = urlParams.get("recipeId");
 
   try {
-    const response = await fetch(`http://localhost:8181/recipes/${recipeId}`, {
+    const response = await fetch(`http://localhost:8282/recipes/${recipeId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

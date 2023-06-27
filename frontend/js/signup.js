@@ -1,4 +1,4 @@
-const signupEndpoint = "http://localhost:8181/users/signup";
+const signupEndpoint = "http://localhost:8282/users/signup";
 
 $(document).ready(function () {
   // Register form submit event
@@ -31,9 +31,9 @@ $(document).ready(function () {
         console.log("Registration successful");
         // Display success banner
         $("#success-banner").text("Sign up successful").show();
-        // Redirect to the home page after a delay
+        // Redirect to the login page after a delay
         setTimeout(function () {
-          window.location.href = "index.html"; // Replace with the actual home page URL
+          window.location.href = "login.html"; 
         }, 2000); // Delay in milliseconds (3 seconds in this example)
       } else {
         // Handle registration failure
