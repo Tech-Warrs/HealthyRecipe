@@ -7,6 +7,10 @@ public interface IMemberService {
 	
 	User createUser(User user);
 	
+	boolean existsByUsername(String username);
+	
+	boolean existsByEmail(String email);
+	
 	User findUserById(long userId, String token);
 
 	User findUserByUsername(String username, String token);

@@ -55,7 +55,14 @@ public class RecipeController {
 	
 	@GetMapping("/{recipeId}")
 	public Recipe getRecipesById(@PathVariable long recipeId) {
-		return recipeService.getRecipeById(recipeId);
+		Recipe returnedRecipe = recipeService.getRecipeById(recipeId);
+		
+		if(returnedRecipe!= null && !returnedRecipe.getImageUrl().isEmpty()){
+			String fullImageUrl = IMAGE_BASE_URL + returnedRecipe.getImageUrl();
+			returnedRecipe.setImageUrl(fullImageUrl);
+		}
+		
+		return returnedRecipe;
 	}
 
 	@GetMapping("/users/{userId}")
@@ -98,7 +105,14 @@ public class RecipeController {
 
 	@PutMapping("/{recipeId}")
 	public Recipe updateRecipe(@PathVariable long recipeId, @RequestBody Recipe updatedRecipe, @RequestHeader("Authorization") String token) {
-	    return recipeService.updateRecipe(recipeId, updatedRecipe, token);
+		Recipe returnedRecipe = recipeService.updateRecipe(recipeId, updatedRecipe, token);
+		
+		if(returnedRecipe!= null && !returnedRecipe.getImageUrl().isEmpty()){
+			String fullImageUrl = IMAGE_BASE_URL + returnedRecipe.getImageUrl();
+			returnedRecipe.setImageUrl(fullImageUrl);
+		}
+		
+		return returnedRecipe;
 	}
 	
 }

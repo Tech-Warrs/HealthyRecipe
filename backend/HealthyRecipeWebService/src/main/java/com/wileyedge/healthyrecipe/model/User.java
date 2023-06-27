@@ -13,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -26,7 +27,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 
 @Entity
-@Table(name = "User")
+@Table(name = "user_tbl")
 public class User implements Serializable {
 
 	private static final long serialVersionUID = -8388637334633870676L;
@@ -56,8 +57,8 @@ public class User implements Serializable {
 	private String lastName;
 
 	private String role = "MEMBER";
-
-	@JsonIgnore
+	
+	@JsonIgnore // don't display in json output
 	private String token;
 	
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

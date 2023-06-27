@@ -29,11 +29,11 @@ public class MemberServiceImpl implements IMemberService {
 	@Override
 	public User createUser(User user) {
 		// Check if email already exists
-		if (userRepository.existsByEmail(user.getEmail())) {
+		if (existsByEmail(user.getEmail())) {
 			throw new DuplicateEmailException("Email already exists: " + user.getEmail());
 		}
 		//Check if username already exists
-		if (userRepository.existsByUsername(user.getUsername())) {
+		if (existsByUsername(user.getUsername())) {
 			throw new UsernameAlreadyExistsException("Username already exists: " + user.getUsername());
 		}
 
@@ -139,6 +139,16 @@ public class MemberServiceImpl implements IMemberService {
 		}		
 
 		return userRepository.findByUsername(username);
+	}
+
+	@Override
+	public boolean existsByUsername(String username) {
+		return userRepository.existsByUsername(username);
+	}
+
+	@Override
+	public boolean existsByEmail(String email) {
+		return userRepository.existsByUsername(email);
 	}
 
 
