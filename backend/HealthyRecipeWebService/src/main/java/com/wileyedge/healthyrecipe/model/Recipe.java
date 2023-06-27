@@ -55,7 +55,7 @@ public class Recipe implements Serializable{
 	private int cookingDurationInMinutes;
 
 
-	@JsonIgnore
+//	@JsonIgnore
 	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
 	private User user;
