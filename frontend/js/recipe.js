@@ -24,7 +24,9 @@ $(document).ready(async function () {
     let instructions = recipe.instructions.split("\n");
 
     // Assign values to the elements
-    $("#recipe-title").text(`${recipe.title} - Recipe by ${recipe.user.username}`);
+    $("#recipe-title").text(
+      `${recipe.title} - Recipe by ${recipe.user.username}`
+    );
     $("#recipe-img").attr({
       class: "img-fluid mb-3",
       src: recipe.imageUrl,
@@ -45,15 +47,20 @@ $(document).ready(async function () {
     $("#recipe-suitableFor").append(
       $("<h4>").text("Suitable For"),
       $("<ul>").append(
-        recipe.suitableFor.map((category) => $("<li>").text(category))
+        recipe.suitableFor.map((category) =>
+          $("<li>").text(formatCategory(category))
+        )
       )
     );
     $("#recipe-notSuitableFor").append(
       $("<h4>").text("Not Suitable For"),
       $("<ul>").append(
-        recipe.notSuitableFor.map((category) => $("<li>").text(category))
+        recipe.notSuitableFor.map((category) =>
+          $("<li>").text(formatCategory(category))
+        )
       )
     );
+
     $("#recipe-cookingDuration").text(
       `Cooking duration: ${recipe.cookingDurationInMinutes} minutes`
     );
@@ -65,4 +72,11 @@ $(document).ready(async function () {
 function getToken() {
   const user = JSON.parse(localStorage.getItem("user"));
   return user.token;
+}
+
+function formatCategory(category) {
+  return category
+    .split("_") // Split by underscore
+    .map((word) => word[0].toUpperCase() + word.substr(1).toLowerCase()) // Capitalize first letter of each word
+    .join(" "); // Join them back with space
 }
