@@ -3,11 +3,9 @@ $(document).ready(function () {
   const user = getUserFromLocalStorage(); // Function to get user info from local storage
   if (user) {
     // User is logged in
-    console.log("user logged in")
     showLoggedInUser(user);
   } else {
     // User is not logged in
-    console.log("user not logged in");
     showLoggedOutUser();
   }
 
@@ -23,16 +21,14 @@ $(document).ready(function () {
     $("#logout-button").hide();
 
     $("#success-banner").text("Logout successful").show().delay(2000).fadeOut();
+    window.location.href = "index.html";
   });
 });
 
 function showLoggedInUser(user) {
   const userNav = $("#user-nav");
-  const welcomeMessage = $("<span>")
-    .addClass("nav-link")
-    .text(`Welcome, ${user.user.firstName}`)
-    .attr("id", "welcome-message");
-  userNav.append(welcomeMessage);
+  const welcomeHeader = $("#welcome-header");
+  welcomeHeader.text(`Welcome, ${user.user.firstName}`);
 
   $("#login-button").hide();
   $("#signup-button").hide();
@@ -46,13 +42,10 @@ function showLoggedInUser(user) {
 }
 
 function showLoggedOutUser() {
-  // No action needed, as the initial HTML has the Login and Signup buttons
+  $("#user-recipes").hide();
 }
 
 function getUserFromLocalStorage() {
-  // Implement this function to retrieve user info from local storage
-  // If user is logged in, return the user object, otherwise return null
-  // Example implementation:
   const userJson = localStorage.getItem("user");
   return JSON.parse(userJson);
 }

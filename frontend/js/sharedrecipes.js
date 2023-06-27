@@ -18,7 +18,7 @@ const fetchRecipes = async () => {
     }
 
     const recipes = await response.json();
-
+    console.log(recipes[0].user)
     displayRecipes(recipes);
   } catch (error) {
     console.log(error);
@@ -29,11 +29,18 @@ const displayRecipes = (recipes) => {
   const recipeContainer = $("#sharedRecipeContainer");
 
   recipes.forEach((recipe) => {
+    console.log(recipe)
     // Create the column div
     const colDiv = $("<div>").addClass("col");
 
     // Create the card div
-    const cardDiv = $("<div>").addClass("card h-100");
+    const cardDiv = $("<div>")
+      .addClass("card h-100 clickable-card")
+      .css("cursor", "pointer")
+      .attr(
+        "onclick",
+        `window.location.href='recipe.html?recipeId=${recipe.recipeId}'`
+      );
 
     // Create the image tag and append to card div
     const imgTag = $("<img>")
@@ -49,12 +56,12 @@ const displayRecipes = (recipes) => {
     $("<h5>").addClass("card-title").text(recipe.title).appendTo(cardBodyDiv);
 
     // Create the card text and append to card body div
-    $("<p>").addClass("card-text").text(recipe.shortDesc).appendTo(cardBodyDiv);
+    $("<p>").text(recipe.shortDesc).appendTo(cardBodyDiv);
 
     // Create the footer and append to card body div
     $("<footer>")
-      .addClass("blockquote-footer")
-      .text("Created by ")
+      .addClass("blockquote-footer card-text mb-1")
+      .text("Recipe by ")
       .append(
         $("<cite>").attr("title", "Source Title").text(recipe.user.username)
       )
@@ -63,13 +70,6 @@ const displayRecipes = (recipes) => {
     // Append the card body div to the card div
     cardBodyDiv.appendTo(cardDiv);
 
-    // Create the button and append to the card div
-    $("<a>")
-      .addClass("btn btn-primary")
-      .attr("href", `recipe.html?recipeId=${recipe.recipeId}`)
-      .text("Go to Recipe")
-      .appendTo(cardDiv);
-
     // Append the card div to the column div
     cardDiv.appendTo(colDiv);
 
@@ -77,4 +77,3 @@ const displayRecipes = (recipes) => {
     recipeContainer.append(colDiv);
   });
 };
-

@@ -96,6 +96,7 @@ public class RecipeServiceImpl implements IRecipeService {
 		recipe.setInstructions(recipeDTO.getInstructions());
 		recipe.setTitle(recipeDTO.getTitle());
 		recipe.setSuitableFor(recipeDTO.getSuitableFor());
+		recipe.setNotSuitableFor(recipeDTO.getNotSuitableFor());
 		recipe.setCookingDurationInMinutes(recipeDTO.getCookingDurationInMinutes());
 		recipe.setShortDesc(recipeDTO.getShortDesc());
 

@@ -18,52 +18,44 @@ $(document).ready(async function () {
     }
 
     const recipe = await response.json();
-    console.log(recipe.imageUrl)
 
-    // Create jQuery objects for each section of the recipe
-    const title = $("<h2>").text(recipe.title);
-    const image = $("<img>", {
+    // Split the ingredients and instructions by newline character
+    let ingredients = recipe.ingredients.split("\n");
+    let instructions = recipe.instructions.split("\n");
+
+    // Assign values to the elements
+    $("#recipe-title").text(`${recipe.title} - Recipe by ${recipe.user.username}`);
+    $("#recipe-img").attr({
       class: "img-fluid mb-3",
-      src: `${imgUrl}${recipe.imageUrl}`,
+      src: recipe.imageUrl,
       alt: recipe.title,
     });
-    const shortDesc = $("<p>").text(recipe.shortDesc);
-    const ingredients = $("<div>").append(
+    $("#recipe-shortDesc").text(recipe.shortDesc);
+    // Loop over each ingredient and append to the list
+    $("#recipe-ingredients").append(
       $("<h4>").text("Ingredients"),
-      $("<p>").text(recipe.ingredients)
+      ...ingredients.map((item) => $("<p>").text(item))
     );
-    const instructions = $("<div>").append(
+
+    // Loop over each instruction and append to the list
+    $("#recipe-instructions").append(
       $("<h4>").text("Instructions"),
-      $("<p>").text(recipe.instructions)
+      ...instructions.map((item) => $("<p>").text(item))
     );
-    const suitableFor = $("<div>").append(
+    $("#recipe-suitableFor").append(
       $("<h4>").text("Suitable For"),
       $("<ul>").append(
         recipe.suitableFor.map((category) => $("<li>").text(category))
       )
     );
-    const notSuitableFor = $("<div>").append(
+    $("#recipe-notSuitableFor").append(
       $("<h4>").text("Not Suitable For"),
       $("<ul>").append(
         recipe.notSuitableFor.map((category) => $("<li>").text(category))
       )
     );
-    const cookingDuration = $("<p>").text(
+    $("#recipe-cookingDuration").text(
       `Cooking duration: ${recipe.cookingDurationInMinutes} minutes`
-    );
-
-    // Append each section to the recipe container
-    const recipeContainer = $("#recipe-container");
-    recipeContainer.empty();
-    recipeContainer.append(
-      title,
-      image,
-      shortDesc,
-      ingredients,
-      instructions,
-      suitableFor,
-      notSuitableFor,
-      cookingDuration
     );
   } catch (error) {
     console.log(error);

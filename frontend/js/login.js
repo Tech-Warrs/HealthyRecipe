@@ -16,7 +16,7 @@ $(document).ready(function () {
       localStorage.setItem("user", userJson);
 
       $("#success-banner").text("Log in successful").show();
-      // setTimeout(() => (window.location.href = "index.html"), 2000);
+      setTimeout(() => (window.location.href = "index.html"), 1000);
     } catch (error) {
       console.error("Login failed:", error);
     }
@@ -35,7 +35,6 @@ async function login(username, password) {
     throw new Error("Login failed: " + message);
   }
 
-  console.log("Login successful");
   return await response.text();
 }
 
@@ -53,6 +52,5 @@ async function getUser(username, token) {
   }
 
   const userData = await response.json();
-  console.log(userData);
   return userData;
 }

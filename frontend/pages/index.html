@@ -23,7 +23,7 @@
 
   <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <div class="container-fluid">
+      <div class="container">
         <a class="navbar-brand" href="index.html">Home</a>
         <button
           class="navbar-toggler"
@@ -61,6 +61,9 @@
 
           <!-- Right side -->
           <ul class="navbar-nav ms-auto" id="user-nav">
+            <li class="nav-item" id="user-recipes">
+              <a class="nav-link" href="userrecipes.html">Your Recipes</a>
+            </li>
             <li class="nav-item" id="login-button">
               <a class="nav-link" href="login.html">Login</a>
             </li>
@@ -78,12 +81,12 @@
       style="display: none"
     ></div>
 
-    <header class="jumbotron text-center">
-      <h1>Welcome</h1>
+    <header class="jumbotron text-center mt-5">
+      <h1 id="welcome-header">Welcome</h1>
       <p>Explore any recipe to suit your dietry or health goals.</p>
     </header>
 
-    <section class="container">
+    <section class="container mt-5">
       <h2>Featured Recipes</h2>
 
       <div class="row">

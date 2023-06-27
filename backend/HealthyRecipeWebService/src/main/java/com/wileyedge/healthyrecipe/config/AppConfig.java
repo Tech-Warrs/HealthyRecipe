@@ -14,10 +14,15 @@ import software.amazon.awssdk.services.s3.S3Client;
 @Configuration
 public class AppConfig {
 
-	private String accessKey = "AKIAWROIHFOGLFZYUDEF";
+//	private String accessKey = "AKIAWROIHFOGLFZYUDEF";
+//
+//
+//	private String accessSecret = "hCrIezmTRF3LS9fRpDoaue2IaulhVbC08zj2LUEa";
+	
+	private String accessKey = "AKIAWROIHFOGMUFK6AOS";
 
 
-	private String accessSecret = "hCrIezmTRF3LS9fRpDoaue2IaulhVbC08zj2LUEa";
+	private String accessSecret = "XyE1XE5kL9aLbCnr/RJXe/+bojiefDHQNtiDPR4D";
 
 
 	@Bean

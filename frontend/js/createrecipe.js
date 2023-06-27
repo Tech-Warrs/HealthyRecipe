@@ -59,11 +59,13 @@ $(document).ready(function () {
       }
 
       const data = await response.json();
+      const recipeId = data.recipeId;
 
       $("#success-banner").text("Recipe successful created").show();
-      
-      // You can redirect the user to another page here or show a success message
-      // window.location.href = "index.html";
+      setTimeout(
+        () => (window.location.href = `recipe.html?recipeId=${recipeId}`),
+        1000
+      );
     } catch (error) {
       console.error("Error:", error);
       // Show error to user
